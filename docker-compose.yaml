@@ -20,13 +20,11 @@ services:
     container_name: mysql
     image: mysql:latest
     restart: always
-    env_file:
-      - ./.env
     environment:
-      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - MYSQL_DATABASE=$MYSQLDB_DATABASE_USERS
-      - MYSQL_USER=$MYSQLDB_USER
-      - MYSQL_PASSWORD=$MYSQLDB_PASSWORD
+      - MYSQL_ROOT_PASSWORD=root123
+      - MYSQL_DATABASE=flights
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user123
     ports:
       - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
     expose:
@@ -51,13 +49,12 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: heidiks/rabbitmq-delayed-message-exchange:latest
-    env_file: .env
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_USER: my_rabbitmq_user
+      RABBITMQ_DEFAULT_PASS: my_rabbitmq_password
     ports:
-      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
-      - "${RABBITMQ_PORT}:5672"
+      - "15672:15672"
+      - "5672:5672"
     healthcheck:
       test: ["CMD", "rabbitmqctl", "node_health_check"]
       interval: 30s
@@ -72,10 +69,8 @@ services:
     image: maven:3-openjdk-17
     volumes:
       - ./flight-microservice:/flight-microservice
-    env_file:
-      - .env
     ports:
-      - "${FLIGHT_PORT}:8082"
+      - "8082:8082"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -84,8 +79,8 @@ services:
       redis:
         condition: service_healthy
     environment:
-      SPRING_APPLICATION_JSON: '{"spring.data.mongodb.uri" : "mongodb://mongodb:27017/${MONGODB_DATABASE}"}'
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORS: ${RABBITMQ_PASSWORD}
+      SPRING_APPLICATION_JSON: '{"spring.data.mongodb.uri" : "mongodb://mongodb:27017/my_mongodb_database"}'
+      RABBITMQ_USER: my_rabbitmq_user
+      RABBITMQ_PASSWORS: my_rabbitmq_password
     working_dir: /flight-microservice/api
     command: sh -c "./mvnw spring-boot:run"
