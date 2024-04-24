@@ -42,4 +42,4 @@ jobs:
         run: mvn -B install failsafe:integration-test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=GateMate-TQS_flight-microservice -fae
         working-directory: ./api
       - name: Cleanup Docker containers
-        run: docker compose down --volumes
+        run: docker compose -f compose.test.yml down --volumes
