@@ -8,7 +8,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./data/MongoDB:/data/db
+      - data_mg:/data/db
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh | grep 1
       interval: 30s
@@ -30,7 +30,7 @@ services:
     expose:
       - 3306
     volumes:
-      - ./data/MySQL:/var/lib/mysql
+      - data_sql:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 30s
@@ -61,10 +61,10 @@ services:
       timeout: 5s
       retries: 3
     volumes:
-      - ./data/RabbitMQ:/var/lib/rabbitmq
+      - data_rabbitmq:/var/lib/rabbitmq
 
   flight-microservice:
-    build: ./flight-microservice/api
+    build: ./api
     container_name: flight
     image: maven:3-openjdk-17
     volumes:
@@ -84,3 +84,11 @@ services:
       RABBITMQ_PASSWORS: my_rabbitmq_password
     working_dir: /flight-microservice/api
     command: sh -c "./mvnw spring-boot:run"
+
+volumes:
+  data_mg:
+    driver: local
+  data_sql:
+    driver: local
+  data_rabbitmq:
+    driver: local
