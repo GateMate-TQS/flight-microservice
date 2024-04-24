@@ -23,6 +23,10 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      - name: Install tree package
+        run: sudo apt-get install tree
+      - name: Run tree command to debug
+        run: tree
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -30,7 +34,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Setup DockerCompose for Integration Tests
-        run: docker compose -f docker-compose.yml up -d
+        run: docker compose up -d
       - name: Unit Tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
@@ -38,4 +42,4 @@ jobs:
         run: mvn -B install failsafe:integration-test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=GateMate-TQS_flight-microservice -fae
         working-directory: ./api
       - name: Cleanup Docker containers
-        run: docker compose -f docker-compose.yml down --volumes
+        run: docker compose down --volumes
