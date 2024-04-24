@@ -1,0 +1,91 @@
+version: "2.23.0"
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongodb
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/MongoDB:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh | grep 1
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+
+  mysql:
+    container_name: mysql
+    image: mysql:latest
+    restart: always
+    env_file:
+      - ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE_USERS
+      - MYSQL_USER=$MYSQLDB_USER
+      - MYSQL_PASSWORD=$MYSQLDB_PASSWORD
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+    expose:
+      - 3306
+    volumes:
+      - ./data/MySQL:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 50s
+      retries: 5
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: heidiks/rabbitmq-delayed-message-exchange:latest
+    env_file: .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+      - "${RABBITMQ_PORT}:5672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "node_health_check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - ./data/RabbitMQ:/var/lib/rabbitmq
+
+  flight-microservice:
+    build: ./flight-microservice/api
+    container_name: flight
+    image: maven:3-openjdk-17
+    volumes:
+      - ./flight-microservice:/flight-microservice
+    env_file:
+      - .env
+    ports:
+      - "${FLIGHT_PORT}:8082"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_JSON: '{"spring.data.mongodb.uri" : "mongodb://mongodb:27017/${MONGODB_DATABASE}"}'
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORS: ${RABBITMQ_PASSWORD}
+    working_dir: /flight-microservice/api
+    command: sh -c "./mvnw spring-boot:run"
