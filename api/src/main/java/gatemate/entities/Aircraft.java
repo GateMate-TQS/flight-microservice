@@ -1,13 +1,27 @@
 package gatemate.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.util.HashMap;
 
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Aircraft {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
   private String aircraftType;
   private HashMap<String, int[][]> seats;
-
-  public Aircraft() {
-  }
 
   public Aircraft(String aircraftType) {
     this.aircraftType = aircraftType;

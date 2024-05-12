@@ -16,4 +16,5 @@ import gatemate.services.FlightService;
 @RequestMapping("/")
 public class FlightController {
   private final FlightService flightService;
+
 }
