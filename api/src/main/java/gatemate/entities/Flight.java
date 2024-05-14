@@ -31,20 +31,4 @@ public class Flight {
   private String status;
   @OneToOne
   private Aircraft aircraft;
-
-  public Flight(String flightNumber, String flightIata, String airline, String origin, String destination,
-      String departureTime,
-      String arrivalTime,
-      String status,
-      Aircraft aircraft) {
-    this.flightNumber = flightNumber;
-    this.flightIata = flightIata;
-    this.airline = airline;
-    this.origin = origin;
-    this.destination = destination;
-    this.departureTime = departureTime;
-    this.arrivalTime = arrivalTime;
-    this.status = status;
-    this.aircraft = aircraft;
-  }
 }

@@ -26,9 +26,4 @@ public class Aircraft {
   private String aircraftType;
   @OneToMany
   private List<Seats> seats;
-
-  public Aircraft(String aircraftType, List<Seats> seats) {
-    this.aircraftType = aircraftType;
-    this.seats = seats;
-  }
 }

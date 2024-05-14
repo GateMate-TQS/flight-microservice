@@ -23,10 +23,4 @@ public class Seats {
   private String maxRows;
   private String maxCols;
   private String occuped;
-
-  public Seats(String maxRows, String maxCols, String occuped) {
-    this.maxRows = maxRows;
-    this.maxCols = maxCols;
-    this.occuped = occuped;
-  }
 }
