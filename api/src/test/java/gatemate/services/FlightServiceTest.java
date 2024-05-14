@@ -1,6 +1,7 @@
 package gatemate.services;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,6 +41,7 @@ public class FlightServiceTest {
   }
 
   @Test
+  @DisplayName("Test to find all flights")
   public void whenFindAll_thenReturnFlightList() {
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
@@ -51,7 +53,7 @@ public class FlightServiceTest {
     flight2.setOrigin("LAX");
     flight2.setDestination("JFK");
 
-    List<Flight> found = flightServiceImpl.getAllFlights();
+    List<Flight> found = flightServiceImpl.getFlights(null, null, null);
 
     verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).hasSize(2).extracting(Flight::getFlightIata).contains(flight1.getFlightIata(),
@@ -59,41 +61,43 @@ public class FlightServiceTest {
   }
 
   @Test
+  @DisplayName("Test to find filtered flights")
   public void whenFindFilteredFlights_thenReturnFilteredFlightList() {
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
     flight1.setOrigin("JFK");
     flight1.setDestination("LAX");
 
-    List<Flight> found = flightServiceImpl.getFilteredFlights("JFK", "LAX", "AA123");
+    List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", "AA123");
 
     verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
 
-    found = flightServiceImpl.getFilteredFlights(null, "LAX", "AA123");
+    found = flightServiceImpl.getFlights(null, "LAX", "AA123");
 
     verify(flightRepository, VerificationModeFactory.times(2)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
 
-    found = flightServiceImpl.getFilteredFlights("JFK", null, "AA123");
+    found = flightServiceImpl.getFlights("JFK", null, "AA123");
 
     verify(flightRepository, VerificationModeFactory.times(3)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
 
-    found = flightServiceImpl.getFilteredFlights("JFK", "LAX", null);
+    found = flightServiceImpl.getFlights("JFK", "LAX", null);
 
     verify(flightRepository, VerificationModeFactory.times(4)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
 
-    found = flightServiceImpl.getFilteredFlights(null, null, "AA123");
+    found = flightServiceImpl.getFlights(null, null, "AA123");
 
     verify(flightRepository, VerificationModeFactory.times(5)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
   }
 
   @Test
+  @DisplayName("Test to find filtered flights but not found")
   public void whenFindFilteredFlights_thenReturnNotFoundFlights() {
-    List<Flight> found = flightServiceImpl.getFilteredFlights("JFK", "LAX", "AA456");
+    List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", "AA456");
 
     verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).hasSize(0);

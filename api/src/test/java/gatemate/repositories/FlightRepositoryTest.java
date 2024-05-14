@@ -1,5 +1,6 @@
 package gatemate.repositories;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,6 +20,7 @@ class FlightRepositoryTest {
   private FlightRepository flightRepository;
 
   @Test
+  @DisplayName("Test to find flight by id")
   void whenFindFlightByExistingId_thenReturnFlight() {
     Flight flight = new Flight();
     entityManager.persistAndFlush(flight);
@@ -30,6 +32,7 @@ class FlightRepositoryTest {
   }
 
   @Test
+  @DisplayName("Test to find flight by invalid id")
   void whenInvalidId_thenReturnNull() {
     Flight flightdb = flightRepository.findById(-1L).orElse(null);
 
@@ -37,6 +40,7 @@ class FlightRepositoryTest {
   }
 
   @Test
+  @DisplayName("Test to find all flights")
   void givenSetOfFlights_whenFindAll_thenReturnSet() {
     Flight flight1 = new Flight();
     flight1.setFlightNumber("FirstFlight");
@@ -54,6 +58,7 @@ class FlightRepositoryTest {
   }
 
   @Test
+  @DisplayName("Test to find flight by flight Iata")
   void whenFindByFlightIata_thenReturnFlight() {
     Flight flight = new Flight();
     flight.setFlightIata("AA123");
@@ -67,6 +72,7 @@ class FlightRepositoryTest {
   }
 
   @Test
+  @DisplayName("Test to find flight by invalid flight Iata")
   void whenFindByInvalidFlightIata_thenReturnNull() {
     Flight flight = new Flight();
     flight.setFlightIata("AA123");
