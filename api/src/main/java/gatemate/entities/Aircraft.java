@@ -31,20 +31,4 @@ public class Aircraft {
     this.aircraftType = aircraftType;
     this.seats = seats;
   }
-
-  public String getAircraftType() {
-    return aircraftType;
-  }
-
-  public HashMap<String, int[][]> getSeats() {
-    return seats;
-  }
-
-  public void setAircraftType(String aircraftType) {
-    this.aircraftType = aircraftType;
-  }
-
-  public void setSeats(HashMap<String, int[][]> seats) {
-    this.seats = seats;
-  }
 }
