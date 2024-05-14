@@ -7,4 +7,5 @@ import gatemate.entities.Flight;
 
 @Repository
 public interface FlightRepository extends JpaRepository<Flight, Long> {
+  Flight findByFlightIata(String flightIata);
 }
