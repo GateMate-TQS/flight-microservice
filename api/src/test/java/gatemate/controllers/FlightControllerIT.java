@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.is;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest
-public class FlightControllerIT {
+class FlightControllerIT {
   @Autowired
   private MockMvc mockMvc;
   @Autowired

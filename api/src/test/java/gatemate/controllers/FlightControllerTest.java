@@ -26,7 +26,7 @@ import gatemate.entities.Seats;
 import gatemate.services.FlightService;
 
 @WebMvcTest(FlightController.class)
-public class FlightControllerTest {
+class FlightControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
@@ -34,7 +34,7 @@ public class FlightControllerTest {
   private FlightService flightService;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     RestAssuredMockMvc.mockMvc(mockMvc);
   }
 

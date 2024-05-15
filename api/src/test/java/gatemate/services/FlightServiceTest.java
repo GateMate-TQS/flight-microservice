@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FlightServiceTest {
-  @Mock(lenient = true)
+class FlightServiceTest {
+  @Mock
   private FlightRepository flightRepository;
   @InjectMocks
   private FlightServiceImpl flightServiceImpl;
@@ -42,7 +42,7 @@ public class FlightServiceTest {
 
   @Test
   @DisplayName("Test to find all flights")
-  public void whenFindAll_thenReturnFlightList() {
+  void whenFindAll_thenReturnFlightList() {
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
     flight1.setOrigin("JFK");
@@ -62,7 +62,7 @@ public class FlightServiceTest {
 
   @Test
   @DisplayName("Test to find filtered flights")
-  public void whenFindFilteredFlights_thenReturnFilteredFlightList() {
+  void whenFindFilteredFlights_thenReturnFilteredFlightList() {
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
     flight1.setOrigin("JFK");
@@ -96,10 +96,10 @@ public class FlightServiceTest {
 
   @Test
   @DisplayName("Test to find filtered flights but not found")
-  public void whenFindFilteredFlights_thenReturnNotFoundFlights() {
+  void whenFindFilteredFlights_thenReturnNotFoundFlights() {
     List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", "AA456");
 
     verify(flightRepository, VerificationModeFactory.times(1)).findAll();
-    assertThat(found).hasSize(0);
+    assertThat(found).isEmpty();
   }
 }

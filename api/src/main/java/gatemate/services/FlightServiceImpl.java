@@ -1,7 +1,6 @@
 package gatemate.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,13 +27,11 @@ public class FlightServiceImpl implements FlightService {
 
   @Override
   public List<Flight> getFlights(String from, String to, String flightIata) {
-    List<Flight> filteredFlights = flightRepository.findAll().stream()
+    return flightRepository.findAll().stream()
         .filter(flight -> from == null || flight.getOrigin().equals(from))
         .filter(flight -> to == null || flight.getDestination().equals(to))
         .filter(flight -> flightIata == null || String.valueOf(flight.getFlightIata()).equals(flightIata))
-        .collect(Collectors.toList());
-
-    return filteredFlights;
+        .toList();
   }
 
   @Override
