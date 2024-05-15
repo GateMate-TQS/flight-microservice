@@ -20,7 +20,9 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import gatemate.entities.Aircraft;
 import gatemate.entities.Flight;
+import gatemate.entities.Seats;
 import gatemate.services.FlightService;
 
 @WebMvcTest(FlightController.class)
@@ -39,6 +41,14 @@ public class FlightControllerTest {
   @Test
   @DisplayName("Test to get all flights")
   void whenGetAllFlights_thenReturnFlightList() {
+    Seats seats = new Seats();
+    seats.setMaxCols(6);
+    seats.setMaxRows(10);
+
+    Aircraft aircraft = new Aircraft();
+    aircraft.setAircraftType("Boeing 777");
+    aircraft.setSeats(seats);
+
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
     flight1.setOrigin("JFK");
@@ -47,8 +57,12 @@ public class FlightControllerTest {
     flight2.setFlightIata("AA456");
     flight2.setOrigin("LAX");
     flight2.setDestination("JFK");
+    Flight flight3 = new Flight();
+    flight3.setFlightIata("AA789");
+    flight3.setOrigin("JFK");
+    flight3.setDestination("MIA");
 
-    when(flightService.getFlights(null, null, null)).thenReturn(Arrays.asList(flight1, flight2));
+    when(flightService.getFlights(null, null, null)).thenReturn(Arrays.asList(flight1, flight2, flight3));
 
     RestAssuredMockMvc.given()
         .when()
@@ -58,7 +72,7 @@ public class FlightControllerTest {
         .statusCode(200)
         .contentType(ContentType.JSON)
         .and()
-        .body("", hasSize(2))
+        .body("", hasSize(3))
         .and()
         .body("[0].flightIata", is(flight1.getFlightIata()))
         .and()
@@ -70,7 +84,13 @@ public class FlightControllerTest {
         .and()
         .body("[1].origin", is(flight2.getOrigin()))
         .and()
-        .body("[1].destination", is(flight2.getDestination()));
+        .body("[1].destination", is(flight2.getDestination()))
+        .and()
+        .body("[2].flightIata", is(flight3.getFlightIata()))
+        .and()
+        .body("[2].origin", is(flight3.getOrigin()))
+        .and()
+        .body("[2].destination", is(flight3.getDestination()));
 
     verify(flightService, times(1)).getFlights(null, null, null);
   }
@@ -82,11 +102,14 @@ public class FlightControllerTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin("JFK");
     flight1.setDestination("LAX");
-
     Flight flight2 = new Flight();
     flight2.setFlightIata("AA456");
     flight2.setOrigin("LAX");
     flight2.setDestination("JFK");
+    Flight flight3 = new Flight();
+    flight3.setFlightIata("AA789");
+    flight3.setOrigin("JFK");
+    flight3.setDestination("MIA");
 
     when(flightService.getFlights("JFK", "LAX", "AA123")).thenReturn(Arrays.asList(flight1));
 
@@ -197,6 +220,54 @@ public class FlightControllerTest {
         .body("[0].destination", is(flight1.getDestination()));
 
     verify(flightService, times(1)).getFlights(null, null, "AA123");
+
+    when(flightService.getFlights(null, null, "AA456")).thenReturn(Arrays.asList(flight2));
+
+    RestAssuredMockMvc.given()
+        .param("flightIata", "AA456")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(1))
+        .and()
+        .body("[0].flightIata", is(flight2.getFlightIata()))
+        .and()
+        .body("[0].origin", is(flight2.getOrigin()))
+        .and()
+        .body("[0].destination", is(flight2.getDestination()));
+
+    verify(flightService, times(1)).getFlights(null, null, "AA456");
+
+    when(flightService.getFlights("JFK", null, null)).thenReturn(Arrays.asList(flight1, flight3));
+
+    RestAssuredMockMvc.given()
+        .param("from", "JFK")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(2))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin", is(flight1.getOrigin()))
+        .and()
+        .body("[0].destination", is(flight1.getDestination()))
+        .and()
+        .body("[1].flightIata", is(flight3.getFlightIata()))
+        .and()
+        .body("[1].origin", is(flight3.getOrigin()))
+        .and()
+        .body("[1].destination", is(flight3.getDestination()));
+
+    verify(flightService, times(1)).getFlights("JFK", null, null);
   }
 
   @Test
