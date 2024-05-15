@@ -7,12 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisException;
-import gatemate.entities.Aircraft;
 import gatemate.entities.Flight;
 import gatemate.repositories.FlightRepository;
+import redis.clients.jedis.JedisPool;
 
 @Service
 public class FlightServiceImpl implements FlightService {
@@ -50,5 +47,15 @@ public class FlightServiceImpl implements FlightService {
   public Flight purchaseTicket(String flightIata, String seatClass, int numberOfTickets) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'purchaseTicket'");
+  }
+
+  @Override
+  public Flight save(Flight flight) {
+    return flightRepository.save(flight);
+  }
+
+  @Override
+  public List<Flight> getAllFlights() {
+    return flightRepository.findAll();
   }
 }

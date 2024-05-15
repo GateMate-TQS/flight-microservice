@@ -7,4 +7,5 @@ import gatemate.entities.Aircraft;
 
 @Repository
 public interface AircraftRepository extends JpaRepository<Aircraft, Long> {
+    Aircraft findByAircraftType(String aircraftType);
 }
