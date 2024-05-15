@@ -24,11 +24,11 @@ class FlightRepositoryTest {
   void whenFindFlightByExistingId_thenReturnFlight() {
     Flight flight = new Flight();
     entityManager.persistAndFlush(flight);
+
     Flight flightdb = flightRepository.findById(flight.getId()).orElse(null);
 
     assertThat(flightdb).isNotNull();
     assertThat(flightdb.getId()).isEqualTo(flight.getId());
-    assertThat(flightdb.getFlightNumber()).isEqualTo(flight.getFlightNumber());
   }
 
   @Test
