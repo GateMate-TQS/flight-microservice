@@ -22,6 +22,7 @@ public class Flight {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String flightNumber;
+  private String flightIata;
   private String airline;
   private String origin;
   private String destination;
@@ -30,18 +31,4 @@ public class Flight {
   private String status;
   @OneToOne
   private Aircraft aircraft;
-
-  public Flight(String flightNumber, String airline, String origin, String destination, String departureTime,
-      String arrivalTime,
-      String status,
-      Aircraft aircraft) {
-    this.flightNumber = flightNumber;
-    this.airline = airline;
-    this.origin = origin;
-    this.destination = destination;
-    this.departureTime = departureTime;
-    this.arrivalTime = arrivalTime;
-    this.status = status;
-    this.aircraft = aircraft;
-  }
 }
