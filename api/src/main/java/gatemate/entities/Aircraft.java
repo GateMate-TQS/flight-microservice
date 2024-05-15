@@ -8,10 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -24,6 +22,6 @@ public class Aircraft {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String aircraftType;
-  @OneToMany
-  private List<Seats> seats;
+  @OneToOne
+  private Seats seats;
 }

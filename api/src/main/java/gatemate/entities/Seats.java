@@ -20,7 +20,7 @@ public class Seats {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private String maxRows;
-  private String maxCols;
+  private int maxRows;
+  private int maxCols;
   private String occuped;
 }
