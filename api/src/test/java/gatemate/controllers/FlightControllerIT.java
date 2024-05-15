@@ -113,101 +113,129 @@ class FlightControllerIT {
   }
 
   @Test
-  @DisplayName("Test to get filtered flights")
-  void whenGetFilteredFlights_thenReturnFilteredFlightList() {
+  @DisplayName("Test to get filtered flights from JFK to LAX and flight IATA AA123")
+  void whenGetFilteredFlightsFromJFKToLAXFLightIataAA123_thenReturnFilteredFlightList() {
     Flight flight1 = flightRepository.findByFlightIata("AA123");
+
+    RestAssuredMockMvc.given()
+        .param("from", "JFK")
+        .param("to", "LAX")
+        .param("flightIata", "AA123")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(1))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin", is(flight1.getOrigin()))
+        .and()
+        .body("[0].destination", is(flight1.getDestination()));
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights to LAX and flight IATA AA123")
+  void whenGetFilteredFlightsToLAXFLightIataAA123_thenReturnFilteredFlightList() {
+    Flight flight1 = flightRepository.findByFlightIata("AA123");
+
+    RestAssuredMockMvc.given()
+        .param("to", "LAX")
+        .param("flightIata", "AA123")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(1))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin", is(flight1.getOrigin()))
+        .and()
+        .body("[0].destination", is(flight1.getDestination()));
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights from JFK and flight IATA AA123")
+  void whenGetFilteredFlightsFromJFKFLightIataAA123_thenReturnFilteredFlightList() {
+    Flight flight1 = flightRepository.findByFlightIata("AA123");
+
+    RestAssuredMockMvc.given()
+        .param("from", "JFK")
+        .param("flightIata", "AA123")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(1))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin", is(flight1.getOrigin()))
+        .and()
+        .body("[0].destination", is(flight1.getDestination()));
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights from JFK to LAX")
+  void whenGetFilteredFlightsFromJFKToLAX_thenReturnFilteredFlightList() {
+    Flight flight1 = flightRepository.findByFlightIata("AA123");
+
+    RestAssuredMockMvc.given()
+        .param("from", "JFK")
+        .param("to", "LAX")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(1))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin", is(flight1.getOrigin()))
+        .and()
+        .body("[0].destination", is(flight1.getDestination()));
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights with flight IATA AA123")
+  void whenGetFilteredFlightsFLightIataAA123_thenReturnFilteredFlightList() {
+    Flight flight1 = flightRepository.findByFlightIata("AA123");
+
+    RestAssuredMockMvc.given()
+        .param("flightIata", "AA123")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(1))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin", is(flight1.getOrigin()))
+        .and()
+        .body("[0].destination", is(flight1.getDestination()));
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights with flight IATA AA456")
+  void whenGetFilteredFlightsFLightIataAA456_thenReturnFilteredFlightList() {
     Flight flight2 = flightRepository.findByFlightIata("AA456");
-    Flight flight3 = flightRepository.findByFlightIata("AA789");
-
-    RestAssuredMockMvc.given()
-        .param("from", "JFK")
-        .param("to", "LAX")
-        .param("flightIata", "AA123")
-        .when()
-        .get("/flights")
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .contentType(ContentType.JSON)
-        .and()
-        .body("", hasSize(1))
-        .and()
-        .body("[0].flightIata", is(flight1.getFlightIata()))
-        .and()
-        .body("[0].origin", is(flight1.getOrigin()))
-        .and()
-        .body("[0].destination", is(flight1.getDestination()));
-
-    RestAssuredMockMvc.given()
-        .param("to", "LAX")
-        .param("flightIata", "AA123")
-        .when()
-        .get("/flights")
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .contentType(ContentType.JSON)
-        .and()
-        .body("", hasSize(1))
-        .and()
-        .body("[0].flightIata", is(flight1.getFlightIata()))
-        .and()
-        .body("[0].origin", is(flight1.getOrigin()))
-        .and()
-        .body("[0].destination", is(flight1.getDestination()));
-
-    RestAssuredMockMvc.given()
-        .param("from", "JFK")
-        .param("flightIata", "AA123")
-        .when()
-        .get("/flights")
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .contentType(ContentType.JSON)
-        .and()
-        .body("", hasSize(1))
-        .and()
-        .body("[0].flightIata", is(flight1.getFlightIata()))
-        .and()
-        .body("[0].origin", is(flight1.getOrigin()))
-        .and()
-        .body("[0].destination", is(flight1.getDestination()));
-
-    RestAssuredMockMvc.given()
-        .param("from", "JFK")
-        .param("to", "LAX")
-        .when()
-        .get("/flights")
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .contentType(ContentType.JSON)
-        .and()
-        .body("", hasSize(1))
-        .and()
-        .body("[0].flightIata", is(flight1.getFlightIata()))
-        .and()
-        .body("[0].origin", is(flight1.getOrigin()))
-        .and()
-        .body("[0].destination", is(flight1.getDestination()));
-
-    RestAssuredMockMvc.given()
-        .param("flightIata", "AA123")
-        .when()
-        .get("/flights")
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .contentType(ContentType.JSON)
-        .and()
-        .body("", hasSize(1))
-        .and()
-        .body("[0].flightIata", is(flight1.getFlightIata()))
-        .and()
-        .body("[0].origin", is(flight1.getOrigin()))
-        .and()
-        .body("[0].destination", is(flight1.getDestination()));
 
     RestAssuredMockMvc.given()
         .param("flightIata", "AA456")
@@ -225,6 +253,13 @@ class FlightControllerIT {
         .body("[0].origin", is(flight2.getOrigin()))
         .and()
         .body("[0].destination", is(flight2.getDestination()));
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights from JFK")
+  void whenGetFilteredFlightsFromJFK_thenReturnFilteredFlightList() {
+    Flight flight1 = flightRepository.findByFlightIata("AA123");
+    Flight flight3 = flightRepository.findByFlightIata("AA789");
 
     RestAssuredMockMvc.given()
         .param("from", "JFK")

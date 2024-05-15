@@ -96,20 +96,12 @@ class FlightControllerTest {
   }
 
   @Test
-  @DisplayName("Test to get filtered flights")
-  void whenGetFilteredFlights_thenReturnFilteredFlightList() {
+  @DisplayName("Test to get filtered flights from JFK to LAX and flight IATA AA123")
+  void whenGetFilteredFlightsFromJFKToLAXFLightIataAA123_thenReturnFilteredFlightList() {
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
     flight1.setOrigin("JFK");
     flight1.setDestination("LAX");
-    Flight flight2 = new Flight();
-    flight2.setFlightIata("AA456");
-    flight2.setOrigin("LAX");
-    flight2.setDestination("JFK");
-    Flight flight3 = new Flight();
-    flight3.setFlightIata("AA789");
-    flight3.setOrigin("JFK");
-    flight3.setDestination("MIA");
 
     when(flightService.getFlights("JFK", "LAX", "AA123")).thenReturn(Arrays.asList(flight1));
 
@@ -133,6 +125,15 @@ class FlightControllerTest {
         .body("[0].destination", is(flight1.getDestination()));
 
     verify(flightService, times(1)).getFlights("JFK", "LAX", "AA123");
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights to LAX and flight IATA AA123")
+  void whenGetFilteredFlightsToLAXFLightIataAA123_thenReturnFilteredFlightList() {
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin("JFK");
+    flight1.setDestination("LAX");
 
     when(flightService.getFlights(null, "LAX", "AA123")).thenReturn(Arrays.asList(flight1));
 
@@ -155,6 +156,15 @@ class FlightControllerTest {
         .body("[0].destination", is(flight1.getDestination()));
 
     verify(flightService, times(1)).getFlights(null, "LAX", "AA123");
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights from JFK and flight IATA AA123")
+  void whenGetFilteredFlightsFromJFKFLightIataAA123_thenReturnFilteredFlightList() {
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin("JFK");
+    flight1.setDestination("LAX");
 
     when(flightService.getFlights("JFK", null, "AA123")).thenReturn(Arrays.asList(flight1));
 
@@ -177,6 +187,15 @@ class FlightControllerTest {
         .body("[0].destination", is(flight1.getDestination()));
 
     verify(flightService, times(1)).getFlights("JFK", null, "AA123");
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights from JFK to LAX")
+  void whenGetFilteredFlightsFromJFKToLAX_thenReturnFilteredFlightList() {
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin("JFK");
+    flight1.setDestination("LAX");
 
     when(flightService.getFlights("JFK", "LAX", null)).thenReturn(Arrays.asList(flight1));
 
@@ -199,6 +218,15 @@ class FlightControllerTest {
         .body("[0].destination", is(flight1.getDestination()));
 
     verify(flightService, times(1)).getFlights("JFK", "LAX", null);
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights with flight IATA AA123")
+  void whenGetFilteredFlightsWithFlightIataAA123_thenReturnFilteredFlightList() {
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin("JFK");
+    flight1.setDestination("LAX");
 
     when(flightService.getFlights(null, null, "AA123")).thenReturn(Arrays.asList(flight1));
 
@@ -220,6 +248,15 @@ class FlightControllerTest {
         .body("[0].destination", is(flight1.getDestination()));
 
     verify(flightService, times(1)).getFlights(null, null, "AA123");
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights with flight IATA AA456")
+  void whenGetFilteredFlightsWithFlightIataAA456_thenReturnFilteredFlightList() {
+    Flight flight2 = new Flight();
+    flight2.setFlightIata("AA456");
+    flight2.setOrigin("LAX");
+    flight2.setDestination("JFK");
 
     when(flightService.getFlights(null, null, "AA456")).thenReturn(Arrays.asList(flight2));
 
@@ -241,6 +278,19 @@ class FlightControllerTest {
         .body("[0].destination", is(flight2.getDestination()));
 
     verify(flightService, times(1)).getFlights(null, null, "AA456");
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights from JFK")
+  void whenGetFilteredFlightsFromJFK_thenReturnFilteredFlightList() {
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin("JFK");
+    flight1.setDestination("LAX");
+    Flight flight3 = new Flight();
+    flight3.setFlightIata("AA789");
+    flight3.setOrigin("JFK");
+    flight3.setDestination("MIA");
 
     when(flightService.getFlights("JFK", null, null)).thenReturn(Arrays.asList(flight1, flight3));
 
