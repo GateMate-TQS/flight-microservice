@@ -4,7 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,20 +15,18 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "flights")
-public class Flight {
+@Table(name = "airpots_flights")
+public class AirportFlight {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private String flightNumber;
-  private String flightIata;
-  private String airline;
-  private String status;
-  @OneToOne
-  private Aircraft aircraft;
-  @OneToOne
-  private AirportFlight origin;
-  @OneToOne
-  private AirportFlight destination;
-  private long updated;
+  private String iata;
+  private String icao;
+  private String name;
+  private String terminal;
+  private String gate;
+  private int delay;
+  private String scheduled;
+  private String estimated;
+  private String actual;
 }

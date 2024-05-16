@@ -8,10 +8,10 @@ import gatemate.repositories.AircraftRepository;
 import redis.clients.jedis.JedisPool;
 
 @Service
-public class AircraftServiceImpl implements AircraftService{
+public class AircraftServiceImpl implements AircraftService {
 
     @Autowired
-    private final AircraftRepository  aircraftRepository;
+    private final AircraftRepository aircraftRepository;
     private JedisPool pool;
 
     public AircraftServiceImpl(AircraftRepository aircraftRepository) {
@@ -21,13 +21,7 @@ public class AircraftServiceImpl implements AircraftService{
 
     @Override
     public Aircraft getAircraftInfo(String aircraftType) {
-        
+
         return aircraftRepository.findByAircraftType(aircraftType);
     }
-
-    @Override
-    public Aircraft save(Aircraft aircraft) {
-        return aircraftRepository.save(aircraft);
-    }
-    
 }

@@ -25,8 +25,8 @@ public class FlightServiceImpl implements FlightService {
   @Override
   public List<Flight> getFlights(String from, String to, String flightIata) {
     return flightRepository.findAll().stream()
-        .filter(flight -> from == null || flight.getOrigin().equals(from))
-        .filter(flight -> to == null || flight.getDestination().equals(to))
+        .filter(flight -> from == null || flight.getOrigin().getIata().equals(from))
+        .filter(flight -> to == null || flight.getDestination().getIata().equals(to))
         .filter(flight -> flightIata == null || String.valueOf(flight.getFlightIata()).equals(flightIata))
         .toList();
   }
@@ -47,15 +47,5 @@ public class FlightServiceImpl implements FlightService {
   public Flight purchaseTicket(String flightIata, String seatClass, int numberOfTickets) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'purchaseTicket'");
-  }
-
-  @Override
-  public Flight save(Flight flight) {
-    return flightRepository.save(flight);
-  }
-
-  @Override
-  public List<Flight> getAllFlights() {
-    return flightRepository.findAll();
   }
 }

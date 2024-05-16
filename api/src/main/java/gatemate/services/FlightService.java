@@ -9,13 +9,9 @@ import gatemate.entities.Flight;
 public interface FlightService {
   public List<Flight> getFlights(String from, String to, String flightIata);
 
-  public List<Flight> getAllFlights();
-
   public Flight getFlightInfo(String flightIata);
 
   public JsonNode fetchFlightInfo(String flightIata);
 
   public Flight purchaseTicket(String flightIata, String seatClass, int numberOfTickets);
-
-  public Flight save (Flight flight);
 }
