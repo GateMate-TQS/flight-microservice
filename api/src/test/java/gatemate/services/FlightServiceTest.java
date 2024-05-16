@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import gatemate.entities.AirportFlight;
 import gatemate.entities.Flight;
 import gatemate.repositories.FlightRepository;
 
@@ -27,15 +28,23 @@ class FlightServiceTest {
 
   @BeforeEach
   public void setUp() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
-    flight1.setOrigin("JFK");
-    flight1.setDestination("LAX");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
 
+    AirportFlight origin2 = new AirportFlight();
+    origin2.setIata("LAX");
+    AirportFlight destination2 = new AirportFlight();
+    destination2.setIata("JFK");
     Flight flight2 = new Flight();
     flight2.setFlightIata("AA456");
-    flight2.setOrigin("LAX");
-    flight2.setDestination("JFK");
+    flight2.setOrigin(origin2);
+    flight2.setDestination(destination2);
 
     when(flightRepository.findAll()).thenReturn(Arrays.asList(flight1, flight2));
   }
@@ -43,15 +52,23 @@ class FlightServiceTest {
   @Test
   @DisplayName("Test to find all flights")
   void whenFindAll_thenReturnFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
-    flight1.setOrigin("JFK");
-    flight1.setDestination("LAX");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
 
+    AirportFlight origin2 = new AirportFlight();
+    origin2.setIata("LAX");
+    AirportFlight destination2 = new AirportFlight();
+    destination2.setIata("JFK");
     Flight flight2 = new Flight();
     flight2.setFlightIata("AA456");
-    flight2.setOrigin("LAX");
-    flight2.setDestination("JFK");
+    flight2.setOrigin(origin2);
+    flight2.setDestination(destination2);
 
     List<Flight> found = flightServiceImpl.getFlights(null, null, null);
 
@@ -63,10 +80,14 @@ class FlightServiceTest {
   @Test
   @DisplayName("Test to find filtered flights")
   void whenFindFilteredFlights_thenReturnFilteredFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
     Flight flight1 = new Flight();
     flight1.setFlightIata("AA123");
-    flight1.setOrigin("JFK");
-    flight1.setDestination("LAX");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
 
     List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", "AA123");
 

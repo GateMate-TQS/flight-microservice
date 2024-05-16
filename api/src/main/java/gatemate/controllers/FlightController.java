@@ -13,7 +13,7 @@ import gatemate.services.FlightService;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/")
 public class FlightController {
   private final FlightService flightService;
 

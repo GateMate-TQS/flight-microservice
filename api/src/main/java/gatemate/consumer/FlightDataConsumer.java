@@ -15,10 +15,7 @@ import gatemate.entities.Aircraft;
 import gatemate.entities.AirportFlight;
 import gatemate.entities.Flight;
 import gatemate.entities.Seats;
-import gatemate.repositories.AircraftRepository;
 import gatemate.repositories.FlightRepository;
-import gatemate.repositories.SeatsRepository;
-import gatemate.repositories.AirportFlightRepository;
 
 @Component
 public class FlightDataConsumer {
@@ -26,18 +23,10 @@ public class FlightDataConsumer {
 
     private final ObjectMapper objectMapper;
     private final FlightRepository flightRepository;
-    private final AircraftRepository aircraftRepository;
-    private final SeatsRepository seatsRepository;
-    private final AirportFlightRepository airportFlightRepository;
 
-    public FlightDataConsumer(ObjectMapper objectMapper, FlightRepository flightRepository,
-            AircraftRepository aircraftRepository, SeatsRepository seatsRepository,
-            AirportFlightRepository airportFlightRepository) {
+    public FlightDataConsumer(ObjectMapper objectMapper, FlightRepository flightRepository) {
         this.objectMapper = objectMapper;
         this.flightRepository = flightRepository;
-        this.aircraftRepository = aircraftRepository;
-        this.seatsRepository = seatsRepository;
-        this.airportFlightRepository = airportFlightRepository;
 
     }
 
@@ -117,12 +106,10 @@ public class FlightDataConsumer {
                     seats.setMaxRows(30);
                     seats.setMaxCols(6);
                     seats.setOccuped("");
-                    seatsRepository.save(seats);
 
                     Aircraft aircraft = new Aircraft();
                     aircraft.setAircraftType(aircraftType);
                     aircraft.setSeats(seats);
-                    aircraftRepository.save(aircraft);
 
                     AirportFlight departure = new AirportFlight();
                     departure.setIata(departureIata);
@@ -134,7 +121,6 @@ public class FlightDataConsumer {
                     departure.setScheduled(departureScheduled);
                     departure.setEstimated(departureEstimated);
                     departure.setActual(departureActual);
-                    airportFlightRepository.save(departure);
 
                     AirportFlight arrival = new AirportFlight();
                     arrival.setIata(arrivalIata);
@@ -146,17 +132,6 @@ public class FlightDataConsumer {
                     arrival.setScheduled(arrivalScheduled);
                     arrival.setEstimated(arrivalEstimated);
                     arrival.setActual(arrivalActual);
-                    airportFlightRepository.save(arrival);
-
-                    Flight flight = new Flight();
-                    flight.setFlightNumber(flightNumber);
-                    flight.setFlightIata(flightIata);
-                    flight.setAirline(airline);
-                    flight.setStatus(status);
-                    flight.setAircraft(aircraft);
-                    flight.setOrigin(departure);
-                    flight.setDestination(arrival);
-                    flight.setUpdated(currentTime);
 
                     // se o voo ja existir
                     Flight existingFlight = flightRepository.findByFlightIata(flightIata);
@@ -173,11 +148,20 @@ public class FlightDataConsumer {
                         flightRepository.save(existingFlight);
                         System.out.println("Flight updated");
                     } else {
+                        Flight flight = new Flight();
+                        flight.setFlightNumber(flightNumber);
+                        flight.setFlightIata(flightIata);
+                        flight.setAirline(airline);
+                        flight.setStatus(status);
+                        flight.setAircraft(aircraft);
+                        flight.setOrigin(departure);
+                        flight.setDestination(arrival);
+                        flight.setUpdated(currentTime);
+
                         flightRepository.save(flight);
                         System.out.println("Flight saved");
                     }
                 }
-                System.out.println("Data saved");
             } else {
                 System.err.println("Error: 'data' is not a list");
             }
