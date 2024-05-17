@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gatemate.entities.Flight;

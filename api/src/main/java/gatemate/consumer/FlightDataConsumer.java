@@ -8,6 +8,8 @@ import java.util.Map;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,155 +23,146 @@ import gatemate.repositories.FlightRepository;
 public class FlightDataConsumer {
     private static final String QUEUE_NAME = "flight-data";
 
+    private static final Logger logger = LoggerFactory.getLogger(FlightDataConsumer.class);
+
     private final ObjectMapper objectMapper;
     private final FlightRepository flightRepository;
 
     public FlightDataConsumer(ObjectMapper objectMapper, FlightRepository flightRepository) {
         this.objectMapper = objectMapper;
         this.flightRepository = flightRepository;
-
     }
 
     @RabbitListener(queuesToDeclare = @Queue(value = QUEUE_NAME, durable = "false"))
     public void receiveMessage(String message) {
-        System.out.println("Received message from queue: ");
+        logger.info("Received message from queue");
 
         Long currentTime = System.currentTimeMillis();
         Long updateThreshold = currentTime - 30 * 60 * 1000;
 
-        // apagar voos antigos
+        deleteOldFlights(updateThreshold);
+
+        try {
+            Map<String, Object> messageMap = parseMessage(message);
+            processMessageData(messageMap, currentTime);
+            logger.info("Message processed");
+        } catch (IOException e) {
+            logger.error("Error parsing message: {}", e.getMessage());
+        }
+    }
+
+    private void deleteOldFlights(Long updateThreshold) {
         List<Flight> oldFlights = flightRepository.findByUpdatedLessThan(updateThreshold);
         for (Flight flight : oldFlights) {
             flightRepository.delete(flight);
         }
-        System.out.println("Old flights deleted");
+        logger.info("Old flights deleted");
+    }
 
-        try {
-            // Convert the JSON string message to a Map
-            Map<String, Object> messageMap = objectMapper.readValue(message, HashMap.class);
+    private Map<String, Object> parseMessage(String message) throws IOException {
+        return objectMapper.readValue(message, HashMap.class);
+    }
 
-            Object data = messageMap.get("data");
-            if (data instanceof List) {
-                List<Map<String, Object>> dataList = (List<Map<String, Object>>) data;
+    private void processMessageData(Map<String, Object> messageMap, Long currentTime) {
+        Object data = messageMap.get("data");
+        if (data instanceof List) {
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) data;
+            logger.info("Data received: {}", dataList);
 
-                System.out.println("Data received: " + dataList);
-
-                // Iterate through each dictionary in the list
-
-                for (Map<String, Object> dataMap : dataList) {
-                    Map<String, Object> flight_dic = (Map<String, Object>) dataMap.get("flight");
-                    String flightNumber = (String) flight_dic.get("number");
-                    String flightIata = (String) flight_dic.get("iata");
-
-                    Map<String, Object> airline_dic = (Map<String, Object>) dataMap.get("airline");
-                    String airline = (String) airline_dic.get("name");
-
-                    String status = (String) dataMap.get("flight_status");
-
-                    Map<String, Object> aircraft_dic = (Map<String, Object>) dataMap.get("aircraft");
-
-                    String aircraftType;
-
-                    if (aircraft_dic == null) {
-                        aircraftType = "Boeing 737-800";
-                    } else {
-                        aircraftType = (String) aircraft_dic.get("registration");
-                    }
-
-                    Map<String, Object> departure_dic = (Map<String, Object>) dataMap.get("departure");
-                    String departureIata = (String) departure_dic.get("iata");
-                    String departureIcao = (String) departure_dic.get("icao");
-                    String departureAiportName = (String) departure_dic.get("airport");
-                    String departureTerminal = (String) departure_dic.get("terminal");
-                    String departureGate = (String) departure_dic.get("gate");
-                    Object departureDelayObj = departure_dic.get("delay");
-                    int departureDelay = departureDelayObj == null ? 0 : (int) departureDelayObj;
-                    // int departureDelay = departure_dic.get("delay") == "null" ? 0 : (int)
-                    // departure_dic.get("delay");
-                    String departureScheduled = (String) departure_dic.get("scheduled");
-                    String departureEstimated = (String) departure_dic.get("estimated");
-                    String departureActual = (String) departure_dic.get("actual");
-
-                    Map<String, Object> arrival_dic = (Map<String, Object>) dataMap.get("arrival");
-                    String arrivalIata = (String) arrival_dic.get("iata");
-                    String arrivalIcao = (String) arrival_dic.get("icao");
-                    String arrivalAiportName = (String) arrival_dic.get("airport");
-                    String arrivalTerminal = (String) arrival_dic.get("terminal");
-                    String arrivalGate = (String) arrival_dic.get("gate");
-                    Object arrivalDelayObj = arrival_dic.get("delay");
-                    int arrivalDelay = arrivalDelayObj == null ? 0 : (int) arrivalDelayObj;
-                    String arrivalScheduled = (String) arrival_dic.get("scheduled");
-                    String arrivalEstimated = (String) arrival_dic.get("estimated");
-                    String arrivalActual = (String) arrival_dic.get("actual");
-
-                    Seats seats = new Seats();
-                    seats.setMaxRows(30);
-                    seats.setMaxCols(6);
-                    seats.setOccuped("");
-
-                    Aircraft aircraft = new Aircraft();
-                    aircraft.setAircraftType(aircraftType);
-                    aircraft.setSeats(seats);
-
-                    AirportFlight departure = new AirportFlight();
-                    departure.setIata(departureIata);
-                    departure.setIcao(departureIcao);
-                    departure.setName(departureAiportName);
-                    departure.setTerminal(departureTerminal);
-                    departure.setGate(departureGate);
-                    departure.setDelay(departureDelay);
-                    departure.setScheduled(departureScheduled);
-                    departure.setEstimated(departureEstimated);
-                    departure.setActual(departureActual);
-
-                    AirportFlight arrival = new AirportFlight();
-                    arrival.setIata(arrivalIata);
-                    arrival.setIcao(arrivalIcao);
-                    arrival.setName(arrivalAiportName);
-                    arrival.setTerminal(arrivalTerminal);
-                    arrival.setGate(arrivalGate);
-                    arrival.setDelay(arrivalDelay);
-                    arrival.setScheduled(arrivalScheduled);
-                    arrival.setEstimated(arrivalEstimated);
-                    arrival.setActual(arrivalActual);
-
-                    // se o voo ja existir
-                    Flight existingFlight = flightRepository.findByFlightIata(flightIata);
-
-                    if (existingFlight != null) {
-                        existingFlight.setFlightNumber(flightNumber);
-                        existingFlight.setAirline(airline);
-                        existingFlight.setStatus(status);
-                        existingFlight.setAircraft(aircraft);
-                        existingFlight.setOrigin(departure);
-                        existingFlight.setDestination(arrival);
-                        existingFlight.setUpdated(currentTime);
-
-                        flightRepository.save(existingFlight);
-                        System.out.println("Flight updated");
-                    } else {
-                        Flight flight = new Flight();
-                        flight.setFlightNumber(flightNumber);
-                        flight.setFlightIata(flightIata);
-                        flight.setAirline(airline);
-                        flight.setStatus(status);
-                        flight.setAircraft(aircraft);
-                        flight.setOrigin(departure);
-                        flight.setDestination(arrival);
-                        flight.setUpdated(currentTime);
-
-                        flightRepository.save(flight);
-                        System.out.println("Flight saved");
-                    }
-                }
-            } else {
-                System.err.println("Error: 'data' is not a list");
+            for (Map<String, Object> dataMap : dataList) {
+                Flight flight = createFlightFromData(dataMap, currentTime);
+                saveOrUpdateFlight(flight);
+                logger.info("Flights created/updated");
             }
-
-            System.out.println("Message processed");
-
-        } catch (IOException e) {
-            System.err.println("Error parsing message: " + e.getMessage());
+        } else {
+            logger.error("Error: 'data' is not a list");
         }
+    }
+
+    private Flight createFlightFromData(Map<String, Object> dataMap, Long currentTime) {
+        String flightNumber = getString(dataMap, "flight", "number");
+        String flightIata = getString(dataMap, "flight", "iata");
+        String airline = getString(dataMap, "airline", "name");
+        String status = (String) dataMap.get("flight_status");
+
+        Aircraft aircraft = createAircraft(dataMap);
+        AirportFlight departure = createAirportFlight(dataMap, "departure");
+        AirportFlight arrival = createAirportFlight(dataMap, "arrival");
+
+        Flight flight = new Flight();
+        flight.setFlightNumber(flightNumber);
+        flight.setFlightIata(flightIata);
+        flight.setAirline(airline);
+        flight.setStatus(status);
+        flight.setAircraft(aircraft);
+        flight.setOrigin(departure);
+        flight.setDestination(arrival);
+        flight.setUpdated(currentTime);
+
+        return flight;
+    }
+
+    private Aircraft createAircraft(Map<String, Object> dataMap) {
+        Map<String, Object> aircraftDic = (Map<String, Object>) dataMap.get("aircraft");
+        String aircraftType = (aircraftDic == null) ? "Boeing 737-800" : (String) aircraftDic.get("registration");
+
+        Seats seats = new Seats();
+        seats.setMaxRows(30);
+        seats.setMaxCols(6);
+        seats.setOccuped("");
+
+        Aircraft aircraft = new Aircraft();
+        aircraft.setAircraftType(aircraftType);
+        aircraft.setSeats(seats);
+
+        return aircraft;
+    }
+
+    private AirportFlight createAirportFlight(Map<String, Object> dataMap, String flightType) {
+        Map<String, Object> flightDic = (Map<String, Object>) dataMap.get(flightType);
+
+        AirportFlight flight = new AirportFlight();
+        flight.setIata((String) flightDic.get("iata"));
+        flight.setIcao((String) flightDic.get("icao"));
+        flight.setName((String) flightDic.get("airport"));
+        flight.setTerminal((String) flightDic.get("terminal"));
+        flight.setGate((String) flightDic.get("gate"));
+        flight.setDelay(getInt(flightDic, "delay"));
+        flight.setScheduled((String) flightDic.get("scheduled"));
+        flight.setEstimated((String) flightDic.get("estimated"));
+        flight.setActual((String) flightDic.get("actual"));
+
+        return flight;
+    }
+
+    private void saveOrUpdateFlight(Flight flight) {
+        Flight existingFlight = flightRepository.findByFlightIata(flight.getFlightIata());
+        if (existingFlight != null) {
+            updateExistingFlight(existingFlight, flight);
+        } else {
+            flightRepository.save(flight);
+        }
+    }
+
+    private void updateExistingFlight(Flight existingFlight, Flight newFlight) {
+        existingFlight.setFlightNumber(newFlight.getFlightNumber());
+        existingFlight.setAirline(newFlight.getAirline());
+        existingFlight.setStatus(newFlight.getStatus());
+        existingFlight.setAircraft(newFlight.getAircraft());
+        existingFlight.setOrigin(newFlight.getOrigin());
+        existingFlight.setDestination(newFlight.getDestination());
+        existingFlight.setUpdated(newFlight.getUpdated());
+
+        flightRepository.save(existingFlight);
+    }
+
+    private String getString(Map<String, Object> dataMap, String parentKey, String key) {
+        Map<String, Object> parentMap = (Map<String, Object>) dataMap.get(parentKey);
+        return parentMap == null ? null : (String) parentMap.get(key);
+    }
+
+    private int getInt(Map<String, Object> dataMap, String key) {
+        Object value = dataMap.get(key);
+        return value == null ? 0 : (int) value;
     }
 }
