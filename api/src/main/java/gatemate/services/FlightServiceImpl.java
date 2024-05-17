@@ -9,17 +9,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gatemate.entities.Flight;
 import gatemate.repositories.FlightRepository;
-import redis.clients.jedis.JedisPool;
 
 @Service
 public class FlightServiceImpl implements FlightService {
   @Autowired
   private final FlightRepository flightRepository;
-  private JedisPool pool;
 
   public FlightServiceImpl(FlightRepository flightRepository) {
     this.flightRepository = flightRepository;
-    this.pool = new JedisPool("redis", 6379);
   }
 
   @Override
