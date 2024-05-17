@@ -7,10 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisException;
-import gatemate.entities.Aircraft;
 import gatemate.entities.Flight;
 import gatemate.repositories.FlightRepository;
 
@@ -18,18 +14,16 @@ import gatemate.repositories.FlightRepository;
 public class FlightServiceImpl implements FlightService {
   @Autowired
   private final FlightRepository flightRepository;
-  private JedisPool pool;
 
   public FlightServiceImpl(FlightRepository flightRepository) {
     this.flightRepository = flightRepository;
-    this.pool = new JedisPool("redis", 6379);
   }
 
   @Override
   public List<Flight> getFlights(String from, String to, String flightIata) {
     return flightRepository.findAll().stream()
-        .filter(flight -> from == null || flight.getOrigin().equals(from))
-        .filter(flight -> to == null || flight.getDestination().equals(to))
+        .filter(flight -> from == null || flight.getOrigin().getIata().equals(from))
+        .filter(flight -> to == null || flight.getDestination().getIata().equals(to))
         .filter(flight -> flightIata == null || String.valueOf(flight.getFlightIata()).equals(flightIata))
         .toList();
   }

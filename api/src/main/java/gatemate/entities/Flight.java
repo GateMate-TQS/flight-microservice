@@ -1,5 +1,6 @@
 package gatemate.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,11 +25,12 @@ public class Flight {
   private String flightNumber;
   private String flightIata;
   private String airline;
-  private String origin;
-  private String destination;
-  private String departureTime;
-  private String arrivalTime;
   private String status;
-  @OneToOne
+  @OneToOne(cascade = CascadeType.ALL)
   private Aircraft aircraft;
+  @OneToOne(cascade = CascadeType.ALL)
+  private AirportFlight origin;
+  @OneToOne(cascade = CascadeType.ALL)
+  private AirportFlight destination;
+  private long updated;
 }

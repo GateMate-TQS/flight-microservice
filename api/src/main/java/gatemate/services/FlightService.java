@@ -1,6 +1,7 @@
 package gatemate.services;
 
 import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import gatemate.entities.Flight;
