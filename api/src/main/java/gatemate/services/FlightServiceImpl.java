@@ -37,7 +37,7 @@ public class FlightServiceImpl implements FlightService {
   @Override
   public Flight getFlightInfo(String flightIata) {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getFlightInfo'");
+    return flightRepository.findByFlightIata(flightIata).orElse(null);
   }
 
   @Override
