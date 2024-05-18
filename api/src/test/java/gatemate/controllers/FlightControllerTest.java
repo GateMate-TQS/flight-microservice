@@ -489,4 +489,56 @@ class FlightControllerTest {
 
     verify(flightService, times(1)).getFlights("JFK", "LAX", null, "AA456");
   }
+
+  @Test
+  @DisplayName("Test to get flight info by flight Iata")
+  void whenGetFlightInfoByFlightIata_thenReturnFlight() {
+    Seats seats1 = new Seats();
+    seats1.setMaxCols(6);
+    seats1.setMaxRows(10);
+
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
+
+    when(flightService.getFlightInfo("AA123")).thenReturn(flight1);
+
+    RestAssuredMockMvc.given()
+        .when()
+        .get("/flights/AA123")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("origin.iata", is(flight1.getOrigin().getIata()))
+        .and()
+        .body("destination.iata", is(flight1.getDestination().getIata()));
+
+    verify(flightService, times(1)).getFlightInfo("AA123");
+  }
+
+  @Test
+  @DisplayName("Test to get flight info by invalid flight Iata")
+  void whenGetFlightInfoByInvalidFlightIata_thenReturnNotFound() {
+    when(flightService.getFlightInfo("AA123")).thenReturn(null);
+
+    RestAssuredMockMvc.given()
+        .when()
+        .get("/flights/AA123")
+        .then()
+        .assertThat()
+        .statusCode(404);
+
+    verify(flightService, times(1)).getFlightInfo("AA123");
+  }
 }

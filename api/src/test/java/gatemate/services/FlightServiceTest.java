@@ -58,7 +58,8 @@ class FlightServiceTest {
     flight3.setDestination(destination3);
     flight3.setAirline("TAP Air Portugal");
 
-    when(flightRepository.findAll()).thenReturn(Arrays.asList(flight1, flight2, flight3));
+    lenient().when(flightRepository.findAll()).thenReturn(Arrays.asList(flight1, flight2, flight3));
+    lenient().when(flightRepository.findByFlightIata("AA123")).thenReturn(flight1);
   }
 
   @Test
@@ -271,5 +272,37 @@ class FlightServiceTest {
 
     verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).isEmpty();
+  }
+
+  @Test
+  @DisplayName("Test to find flight info with flight IATA AA123")
+  void whenFindFlightInfoWithFlightIataAA123_thenReturnFlightInfo() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
+
+    Flight found = flightServiceImpl.getFlightInfo("AA123");
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findByFlightIata("AA123");
+    assertThat(found).isNotNull();
+    assertThat(found.getFlightIata()).isEqualTo(flight1.getFlightIata());
+    assertThat(found.getOrigin().getIata()).isEqualTo(flight1.getOrigin().getIata());
+    assertThat(found.getDestination().getIata()).isEqualTo(flight1.getDestination().getIata());
+    assertThat(found.getAirline()).isEqualTo(flight1.getAirline());
+  }
+
+  @Test
+  @DisplayName("Test to find flight info with invalid flight IATA")
+  void whenFindFlightInfoWithInvalidFlightIata_thenReturnNull() {
+    Flight found = flightServiceImpl.getFlightInfo("AA456");
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findByFlightIata("AA456");
+    assertThat(found).isNull();
   }
 }

@@ -341,4 +341,35 @@ class FlightControllerIT {
         .assertThat()
         .statusCode(404);
   }
+
+  @Test
+  @DisplayName("Test to get flight info by flight Iata")
+  void whenGetFlightInfoByFlightIata_thenReturnFlight() {
+    Flight flight1 = flightRepository.findByFlightIata("AA123");
+
+    RestAssuredMockMvc.given()
+        .when()
+        .get("/flights/AA123")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("origin.iata", is(flight1.getOrigin().getIata()))
+        .and()
+        .body("destination.iata", is(flight1.getDestination().getIata()));
+  }
+
+  @Test
+  @DisplayName("Test to get flight info by invalid flight Iata")
+  void whenGetFlightInfoByInvalidFlightIata_thenReturnNotFound() {
+    RestAssuredMockMvc.given()
+        .when()
+        .get("/flights/AA124")
+        .then()
+        .assertThat()
+        .statusCode(404);
+  }
 }

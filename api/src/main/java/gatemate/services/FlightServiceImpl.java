@@ -24,4 +24,9 @@ public class FlightServiceImpl implements FlightService {
         .filter(flight -> flightIata == null || String.valueOf(flight.getFlightIata()).equals(flightIata))
         .toList();
   }
+
+  @Override
+  public Flight getFlightInfo(String flightIata) {
+    return flightRepository.findByFlightIata(flightIata);
+  }
 }

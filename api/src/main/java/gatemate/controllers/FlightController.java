@@ -32,4 +32,15 @@ public class FlightController {
       return new ResponseEntity<>(flights, HttpStatus.OK);
     }
   }
+
+  @GetMapping("/flights/{flightIata}")
+  public ResponseEntity<Flight> getFlightInfo(@PathVariable String flightIata) {
+    Flight flight = flightService.getFlightInfo(flightIata);
+
+    if (flight == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else {
+      return new ResponseEntity<>(flight, HttpStatus.OK);
+    }
+  }
 }
