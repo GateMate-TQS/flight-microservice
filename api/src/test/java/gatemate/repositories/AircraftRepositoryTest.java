@@ -20,7 +20,7 @@ class AircraftRepositoryTest {
   private AircraftRepository aircraftRepository;
 
   @Test
-  @DisplayName("Test to find aircraft by id")
+  @DisplayName("Find aircraft by id")
   void whenFindFlightByExistingId_thenReturnFlight() {
     Aircraft aircraft = new Aircraft();
     entityManager.persistAndFlush(aircraft);
@@ -32,7 +32,7 @@ class AircraftRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find aircraft by invalid id")
+  @DisplayName("Find aircraft by invalid id")
   void whenInvalidId_thenReturnNull() {
     Aircraft aircraftdb = aircraftRepository.findById(-1L).orElse(null);
 
@@ -40,7 +40,7 @@ class AircraftRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find all aircrafts")
+  @DisplayName("Find all aircrafts")
   void givenSetOfFlights_whenFindAll_thenReturnSet() {
     Aircraft aircraft1 = new Aircraft();
     aircraft1.setAircraftType("Boeing 747");

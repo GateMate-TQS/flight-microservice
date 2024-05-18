@@ -32,6 +32,8 @@ public class Flight {
   private AirportFlight origin;
   @OneToOne(cascade = CascadeType.ALL)
   private AirportFlight destination;
+  @OneToOne(cascade = CascadeType.ALL)
+  private LiveData liveData;
   private int price;
   private long updated;
 }

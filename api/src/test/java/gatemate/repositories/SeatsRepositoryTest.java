@@ -20,7 +20,7 @@ class SeatsRepositoryTest {
   private SeatsRepository seatsRepository;
 
   @Test
-  @DisplayName("Test to find seats by id")
+  @DisplayName("Find seats by id")
   void whenFindSeatsByExistingId_thenReturnFlight() {
     Seats seats = new Seats();
     entityManager.persistAndFlush(seats);
@@ -31,7 +31,7 @@ class SeatsRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find seats by invalid id")
+  @DisplayName("Find seats by invalid id")
   void whenInvalidId_thenReturnNull() {
     Seats seatsdb = seatsRepository.findById(-1L).orElse(null);
 
@@ -39,7 +39,7 @@ class SeatsRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find all seats")
+  @DisplayName("Find all seats")
   void givenSetOfFlights_whenFindAll_thenReturnSet() {
     Seats seats1 = new Seats();
     seats1.setMaxCols(6);

@@ -20,7 +20,7 @@ class AirportFlightRepositoryTest {
   private AirportFlightRepository airportFlightRepository;
 
   @Test
-  @DisplayName("Test to find airportFlight by id")
+  @DisplayName("Find airportFlight by id")
   void whenFindFlightByExistingId_thenReturnFlight() {
     AirportFlight airportFlight = new AirportFlight();
     entityManager.persistAndFlush(airportFlight);
@@ -32,7 +32,7 @@ class AirportFlightRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find airportFlight by invalid id")
+  @DisplayName("Find airportFlight by invalid id")
   void whenInvalidId_thenReturnNull() {
     AirportFlight airportFlightdb = airportFlightRepository.findById(-1L).orElse(null);
 
@@ -40,7 +40,7 @@ class AirportFlightRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find all airportFlights")
+  @DisplayName("Find all airportFlights")
   void givenSetOfFlights_whenFindAll_thenReturnSet() {
     AirportFlight airportFlight1 = new AirportFlight();
     airportFlight1.setName("Lisbon");
