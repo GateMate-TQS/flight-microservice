@@ -20,7 +20,7 @@ class FlightRepositoryTest {
   private FlightRepository flightRepository;
 
   @Test
-  @DisplayName("Test to find flight by id")
+  @DisplayName("Find flight by id")
   void whenFindFlightByExistingId_thenReturnFlight() {
     Flight flight = new Flight();
     entityManager.persistAndFlush(flight);
@@ -32,7 +32,7 @@ class FlightRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find flight by invalid id")
+  @DisplayName("Find flight by invalid id")
   void whenInvalidId_thenReturnNull() {
     Flight flightdb = flightRepository.findById(-1L).orElse(null);
 
@@ -40,7 +40,7 @@ class FlightRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find all flights")
+  @DisplayName("Find all flights")
   void givenSetOfFlights_whenFindAll_thenReturnSet() {
     Flight flight1 = new Flight();
     flight1.setFlightNumber("FirstFlight");
@@ -58,7 +58,7 @@ class FlightRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find flight by flight Iata")
+  @DisplayName("Find flight by flight Iata")
   void whenFindByFlightIata_thenReturnFlight() {
     Flight flight = new Flight();
     flight.setFlightIata("AA123");
@@ -72,7 +72,7 @@ class FlightRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find flight by invalid flight Iata")
+  @DisplayName("Find flight by invalid flight Iata")
   void whenFindByInvalidFlightIata_thenReturnNull() {
     Flight flight = new Flight();
     flight.setFlightIata("AA123");
@@ -85,7 +85,7 @@ class FlightRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find flights by updated time")
+  @DisplayName("Find flights by updated time")
   void whenFindByUpdatedLessThan_thenReturnFlights() {
     Flight flight1 = new Flight();
     flight1.setUpdated(100L);
@@ -103,7 +103,7 @@ class FlightRepositoryTest {
   }
 
   @Test
-  @DisplayName("Test to find flights by invalid updated time")
+  @DisplayName("Find flights by invalid updated time")
   void whenFindByInvalidUpdatedLessThan_thenReturnEmptyList() {
     Flight flight1 = new Flight();
     flight1.setUpdated(100L);
@@ -114,6 +114,39 @@ class FlightRepositoryTest {
     entityManager.persistAndFlush(flight2);
 
     List<Flight> flightList = flightRepository.findByUpdatedLessThan(50L);
+    assertThat(flightList).isEmpty();
+  }
+
+  @Test
+  @DisplayName("Find flights by status")
+  void whenFindByStatus_thenReturnFlights() {
+    Flight flight1 = new Flight();
+    flight1.setStatus("scheduled");
+    Flight flight2 = new Flight();
+    flight2.setStatus("active");
+
+    entityManager.persistAndFlush(flight1);
+    entityManager.persistAndFlush(flight2);
+
+    List<Flight> flightList = flightRepository.findByStatus("scheduled");
+    assertThat(flightList)
+        .hasSize(1)
+        .extracting(Flight::getStatus)
+        .contains(flight1.getStatus());
+  }
+
+  @Test
+  @DisplayName("Find flights by invalid status")
+  void whenFindByInvalidStatus_thenReturnEmptyList() {
+    Flight flight1 = new Flight();
+    flight1.setStatus("scheduled");
+    Flight flight2 = new Flight();
+    flight2.setStatus("active");
+
+    entityManager.persistAndFlush(flight1);
+    entityManager.persistAndFlush(flight2);
+
+    List<Flight> flightList = flightRepository.findByStatus("cancelled");
     assertThat(flightList).isEmpty();
   }
 }

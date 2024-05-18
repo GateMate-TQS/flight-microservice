@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gatemate.entities.Aircraft;
 import gatemate.entities.AirportFlight;
 import gatemate.entities.Flight;
+import gatemate.entities.LiveData;
 import gatemate.entities.Seats;
 import gatemate.repositories.FlightRepository;
 
@@ -91,6 +92,7 @@ public class FlightDataConsumer {
         Aircraft aircraft = createAircraft(dataMap);
         AirportFlight departure = createAirportFlight(dataMap, "departure");
         AirportFlight arrival = createAirportFlight(dataMap, "arrival");
+        LiveData liveData = createLiveData(dataMap);
 
         Flight flight = new Flight();
         flight.setFlightNumber(flightNumber);
@@ -100,7 +102,7 @@ public class FlightDataConsumer {
         flight.setAircraft(aircraft);
         flight.setOrigin(departure);
         flight.setDestination(arrival);
-        // Generate a random price for the flight bettween 0 and 600
+        flight.setLiveData(liveData);
         int price = random.nextInt(600);
         flight.setPrice(price);
         flight.setUpdated(currentTime);
@@ -141,6 +143,23 @@ public class FlightDataConsumer {
         return flight;
     }
 
+    private LiveData createLiveData(Map<String, Object> dataMap) {
+        Map<String, Object> liveDataDic = (Map<String, Object>) dataMap.get("live");
+        if (liveDataDic == null) {
+            return null;
+        }
+
+        LiveData liveData = new LiveData();
+        liveData.setLatitude(((Number) liveDataDic.get("latitude")).floatValue());
+        liveData.setLongitude(((Number) liveDataDic.get("longitude")).floatValue());
+        liveData.setAltitude(((Number) liveDataDic.get("altitude")).floatValue());
+        liveData.setDirection(((Number) liveDataDic.get("direction")).floatValue());
+        liveData.setSpeedHorizontal(((Number) liveDataDic.get("speed_horizontal")).floatValue());
+        liveData.setSpeedVertical(((Number) liveDataDic.get("speed_vertical")).floatValue());
+
+        return liveData;
+    }
+
     private void saveOrUpdateFlight(Flight flight) {
         Flight existingFlight = flightRepository.findByFlightIata(flight.getFlightIata());
         if (existingFlight != null) {
@@ -157,6 +176,7 @@ public class FlightDataConsumer {
         existingFlight.setAircraft(newFlight.getAircraft());
         existingFlight.setOrigin(newFlight.getOrigin());
         existingFlight.setDestination(newFlight.getDestination());
+        existingFlight.setLiveData(newFlight.getLiveData());
         existingFlight.setUpdated(newFlight.getUpdated());
 
         flightRepository.save(existingFlight);

@@ -11,9 +11,10 @@ import gatemate.entities.Flight;
 
 @Repository
 public interface FlightRepository extends JpaRepository<Flight, Long> {
+  List<Flight> findByStatus(String status);
+
   Flight findByFlightIata(String flightIata);
 
   @Query("SELECT f FROM Flight f WHERE f.updated < :time")
   List<Flight> findByUpdatedLessThan(@Param("time") Long time);
-
 }

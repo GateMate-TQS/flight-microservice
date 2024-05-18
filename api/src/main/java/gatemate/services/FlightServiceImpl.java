@@ -16,12 +16,23 @@ public class FlightServiceImpl implements FlightService {
   }
 
   @Override
-  public List<Flight> getFlights(String from, String to, String company, String flightIata) {
-    return flightRepository.findAll().stream()
+  public List<Flight> getScheduledFlights(String from, String to, String company, String flightIata) {
+    return flightRepository.findByStatus("scheduled").stream()
         .filter(flight -> from == null || flight.getOrigin().getIata().equals(from))
         .filter(flight -> to == null || flight.getDestination().getIata().equals(to))
         .filter(flight -> company == null || flight.getAirline().equals(company))
         .filter(flight -> flightIata == null || String.valueOf(flight.getFlightIata()).equals(flightIata))
+        .toList();
+  }
+
+  @Override
+  public List<Flight> getActiveFlights(String from, String to, String company, String flightIata) {
+    return flightRepository.findByStatus("active").stream()
+        .filter(flight -> from == null || flight.getOrigin().getIata().equals(from))
+        .filter(flight -> to == null || flight.getDestination().getIata().equals(to))
+        .filter(flight -> company == null || flight.getAirline().equals(company))
+        .filter(flight -> flightIata == null || String.valueOf(flight.getFlightIata()).equals(flightIata))
+        .filter(flight -> flight.getLiveData() != null)
         .toList();
   }
 
