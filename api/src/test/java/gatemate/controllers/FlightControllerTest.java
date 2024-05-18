@@ -79,16 +79,19 @@ class FlightControllerTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
     Flight flight2 = new Flight();
     flight2.setFlightIata("AA456");
     flight2.setOrigin(origin2);
     flight2.setDestination(destination2);
+    flight2.setAirline("TAP Air Portugal");
     Flight flight3 = new Flight();
     flight3.setFlightIata("AA789");
     flight3.setOrigin(origin3);
     flight3.setDestination(destination3);
+    flight3.setAirline("TAP Air Portugal");
 
-    when(flightService.getFlights(null, null, null)).thenReturn(Arrays.asList(flight1, flight2, flight3));
+    when(flightService.getFlights(null, null, null, null)).thenReturn(Arrays.asList(flight1, flight2, flight3));
 
     RestAssuredMockMvc.given()
         .when()
@@ -118,7 +121,7 @@ class FlightControllerTest {
         .and()
         .body("[2].destination.iata", is(flight3.getDestination().getIata()));
 
-    verify(flightService, times(1)).getFlights(null, null, null);
+    verify(flightService, times(1)).getFlights(null, null, null, null);
   }
 
   @Test
@@ -137,8 +140,9 @@ class FlightControllerTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    when(flightService.getFlights("JFK", "LAX", "AA123")).thenReturn(Arrays.asList(flight1));
+    when(flightService.getFlights("JFK", "LAX", null, "AA123")).thenReturn(Arrays.asList(flight1));
 
     RestAssuredMockMvc.given()
         .param("from", "JFK")
@@ -159,7 +163,7 @@ class FlightControllerTest {
         .and()
         .body("[0].destination.iata", is(flight1.getDestination().getIata()));
 
-    verify(flightService, times(1)).getFlights("JFK", "LAX", "AA123");
+    verify(flightService, times(1)).getFlights("JFK", "LAX", null, "AA123");
   }
 
   @Test
@@ -178,8 +182,9 @@ class FlightControllerTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    when(flightService.getFlights(null, "LAX", "AA123")).thenReturn(Arrays.asList(flight1));
+    when(flightService.getFlights(null, "LAX", null, "AA123")).thenReturn(Arrays.asList(flight1));
 
     RestAssuredMockMvc.given()
         .param("to", "LAX")
@@ -199,7 +204,7 @@ class FlightControllerTest {
         .and()
         .body("[0].destination.iata", is(flight1.getDestination().getIata()));
 
-    verify(flightService, times(1)).getFlights(null, "LAX", "AA123");
+    verify(flightService, times(1)).getFlights(null, "LAX", null, "AA123");
   }
 
   @Test
@@ -218,8 +223,9 @@ class FlightControllerTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    when(flightService.getFlights("JFK", null, "AA123")).thenReturn(Arrays.asList(flight1));
+    when(flightService.getFlights("JFK", null, null, "AA123")).thenReturn(Arrays.asList(flight1));
 
     RestAssuredMockMvc.given()
         .param("from", "JFK")
@@ -239,7 +245,7 @@ class FlightControllerTest {
         .and()
         .body("[0].destination.iata", is(flight1.getDestination().getIata()));
 
-    verify(flightService, times(1)).getFlights("JFK", null, "AA123");
+    verify(flightService, times(1)).getFlights("JFK", null, null, "AA123");
   }
 
   @Test
@@ -258,8 +264,9 @@ class FlightControllerTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    when(flightService.getFlights("JFK", "LAX", null)).thenReturn(Arrays.asList(flight1));
+    when(flightService.getFlights("JFK", "LAX", null, null)).thenReturn(Arrays.asList(flight1));
 
     RestAssuredMockMvc.given()
         .param("from", "JFK")
@@ -279,7 +286,7 @@ class FlightControllerTest {
         .and()
         .body("[0].destination.iata", is(flight1.getDestination().getIata()));
 
-    verify(flightService, times(1)).getFlights("JFK", "LAX", null);
+    verify(flightService, times(1)).getFlights("JFK", "LAX", null, null);
   }
 
   @Test
@@ -298,8 +305,9 @@ class FlightControllerTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    when(flightService.getFlights(null, null, "AA123")).thenReturn(Arrays.asList(flight1));
+    when(flightService.getFlights(null, null, null, "AA123")).thenReturn(Arrays.asList(flight1));
 
     RestAssuredMockMvc.given()
         .param("flightIata", "AA123")
@@ -318,7 +326,7 @@ class FlightControllerTest {
         .and()
         .body("[0].destination.iata", is(flight1.getDestination().getIata()));
 
-    verify(flightService, times(1)).getFlights(null, null, "AA123");
+    verify(flightService, times(1)).getFlights(null, null, null, "AA123");
   }
 
   @Test
@@ -341,8 +349,9 @@ class FlightControllerTest {
     flight2.setFlightIata("AA456");
     flight2.setOrigin(origin2);
     flight2.setDestination(destination2);
+    flight2.setAirline("TAP Air Portugal");
 
-    when(flightService.getFlights(null, null, "AA456")).thenReturn(Arrays.asList(flight2));
+    when(flightService.getFlights(null, null, null, "AA456")).thenReturn(Arrays.asList(flight2));
 
     RestAssuredMockMvc.given()
         .param("flightIata", "AA456")
@@ -361,7 +370,7 @@ class FlightControllerTest {
         .and()
         .body("[0].destination.iata", is(flight2.getDestination().getIata()));
 
-    verify(flightService, times(1)).getFlights(null, null, "AA456");
+    verify(flightService, times(1)).getFlights(null, null, null, "AA456");
   }
 
   @Test
@@ -387,12 +396,14 @@ class FlightControllerTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
     Flight flight3 = new Flight();
     flight3.setFlightIata("AA789");
     flight3.setOrigin(origin3);
     flight3.setDestination(destination3);
+    flight3.setAirline("TAP Air Portugal");
 
-    when(flightService.getFlights("JFK", null, null)).thenReturn(Arrays.asList(flight1, flight3));
+    when(flightService.getFlights("JFK", null, null, null)).thenReturn(Arrays.asList(flight1, flight3));
 
     RestAssuredMockMvc.given()
         .param("from", "JFK")
@@ -417,13 +428,54 @@ class FlightControllerTest {
         .and()
         .body("[1].destination.iata", is(flight3.getDestination().getIata()));
 
-    verify(flightService, times(1)).getFlights("JFK", null, null);
+    verify(flightService, times(1)).getFlights("JFK", null, null, null);
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights of company American Airlines")
+  void whenGetFilteredFlightsCompanyAmericanAirlines_thenReturnFilteredFlightList() {
+    Seats seats1 = new Seats();
+    seats1.setMaxCols(6);
+    seats1.setMaxRows(10);
+
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
+
+    when(flightService.getFlights(null, null, "American Airlines", null)).thenReturn(Arrays.asList(flight1));
+
+    RestAssuredMockMvc.given()
+        .param("company", "American Airlines")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(1))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin.iata", is(flight1.getOrigin().getIata()))
+        .and()
+        .body("[0].destination.iata", is(flight1.getDestination().getIata()))
+        .and()
+        .body("[0].airline", is(flight1.getAirline()));
+
+    verify(flightService, times(1)).getFlights(null, null, "American Airlines", null);
   }
 
   @Test
   @DisplayName("Test to get filtered flights but not found")
   void whenGetFilteredFlightsButNotFound_thenReturnNotFound() {
-    when(flightService.getFlights("JFK", "LAX", "AA456")).thenReturn(Arrays.asList());
+    when(flightService.getFlights("JFK", "LAX", null, "AA456")).thenReturn(Arrays.asList());
 
     RestAssuredMockMvc.given()
         .param("from", "JFK")
@@ -435,6 +487,6 @@ class FlightControllerTest {
         .assertThat()
         .statusCode(404);
 
-    verify(flightService, times(1)).getFlights("JFK", "LAX", "AA456");
+    verify(flightService, times(1)).getFlights("JFK", "LAX", null, "AA456");
   }
 }
