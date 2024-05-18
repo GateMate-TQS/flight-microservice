@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -27,6 +28,8 @@ public class FlightDataConsumer {
 
     private final ObjectMapper objectMapper;
     private final FlightRepository flightRepository;
+
+    private final Random random = new Random();
 
     public FlightDataConsumer(ObjectMapper objectMapper, FlightRepository flightRepository) {
         this.objectMapper = objectMapper;
@@ -97,6 +100,9 @@ public class FlightDataConsumer {
         flight.setAircraft(aircraft);
         flight.setOrigin(departure);
         flight.setDestination(arrival);
+        // Generate a random price for the flight bettween 0 and 600
+        int price = random.nextInt(600);
+        flight.setPrice(price);
         flight.setUpdated(currentTime);
 
         return flight;
