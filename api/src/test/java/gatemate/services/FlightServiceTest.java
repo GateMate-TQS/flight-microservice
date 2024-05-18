@@ -36,6 +36,7 @@ class FlightServiceTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
     AirportFlight origin2 = new AirportFlight();
     origin2.setIata("LAX");
@@ -45,8 +46,19 @@ class FlightServiceTest {
     flight2.setFlightIata("AA456");
     flight2.setOrigin(origin2);
     flight2.setDestination(destination2);
+    flight2.setAirline("TAP Air Portugal");
 
-    when(flightRepository.findAll()).thenReturn(Arrays.asList(flight1, flight2));
+    AirportFlight origin3 = new AirportFlight();
+    origin3.setIata("JFK");
+    AirportFlight destination3 = new AirportFlight();
+    destination3.setIata("MIA");
+    Flight flight3 = new Flight();
+    flight3.setFlightIata("AA789");
+    flight3.setOrigin(origin3);
+    flight3.setDestination(destination3);
+    flight3.setAirline("TAP Air Portugal");
+
+    when(flightRepository.findAll()).thenReturn(Arrays.asList(flight1, flight2, flight3));
   }
 
   @Test
@@ -60,6 +72,7 @@ class FlightServiceTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
     AirportFlight origin2 = new AirportFlight();
     origin2.setIata("LAX");
@@ -69,17 +82,28 @@ class FlightServiceTest {
     flight2.setFlightIata("AA456");
     flight2.setOrigin(origin2);
     flight2.setDestination(destination2);
+    flight2.setAirline("TAP Air Portugal");
 
-    List<Flight> found = flightServiceImpl.getFlights(null, null, null);
+    AirportFlight origin3 = new AirportFlight();
+    origin3.setIata("JFK");
+    AirportFlight destination3 = new AirportFlight();
+    destination3.setIata("MIA");
+    Flight flight3 = new Flight();
+    flight3.setFlightIata("AA789");
+    flight3.setOrigin(origin3);
+    flight3.setDestination(destination3);
+    flight3.setAirline("TAP Air Portugal");
+
+    List<Flight> found = flightServiceImpl.getFlights(null, null, null, null);
 
     verify(flightRepository, VerificationModeFactory.times(1)).findAll();
-    assertThat(found).hasSize(2).extracting(Flight::getFlightIata).contains(flight1.getFlightIata(),
-        flight2.getFlightIata());
+    assertThat(found).hasSize(3).extracting(Flight::getFlightIata).contains(flight1.getFlightIata(),
+        flight2.getFlightIata(), flight3.getFlightIata());
   }
 
   @Test
-  @DisplayName("Test to find filtered flights")
-  void whenFindFilteredFlights_thenReturnFilteredFlightList() {
+  @DisplayName("Test to find filtered flights from JFK to LAX and flight IATA AA123")
+  void whenFindFilteredFlightsFromJFKToLAXFLightIataAA123_thenReturnFilteredFlightList() {
     AirportFlight origin1 = new AirportFlight();
     origin1.setIata("JFK");
     AirportFlight destination1 = new AirportFlight();
@@ -88,37 +112,162 @@ class FlightServiceTest {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", "AA123");
+    List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", null, "AA123");
 
     verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
+  }
 
-    found = flightServiceImpl.getFlights(null, "LAX", "AA123");
+  @Test
+  @DisplayName("Test to find filtered flights to LAX and flight IATA AA123")
+  void whenFindFilteredFlightsToLAXFLightIataAA123_thenReturnFilteredFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    verify(flightRepository, VerificationModeFactory.times(2)).findAll();
+    List<Flight> found = flightServiceImpl.getFlights(null, "LAX", null, "AA123");
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
+  }
 
-    found = flightServiceImpl.getFlights("JFK", null, "AA123");
+  @Test
+  @DisplayName("Test to find filtered flights from JFK and flight IATA AA123")
+  void whenFindFilteredFlightsFromJFKFLightIataAA123_thenReturnFilteredFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    verify(flightRepository, VerificationModeFactory.times(3)).findAll();
+    List<Flight> found = flightServiceImpl.getFlights("JFK", null, null, "AA123");
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
+  }
 
-    found = flightServiceImpl.getFlights("JFK", "LAX", null);
+  @Test
+  @DisplayName("Test to find filtered flights from JFK to LAX")
+  void whenFindFilteredFlightsFromJFKToLAX_thenReturnFilteredFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    verify(flightRepository, VerificationModeFactory.times(4)).findAll();
+    List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", null, null);
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
+  }
 
-    found = flightServiceImpl.getFlights(null, null, "AA123");
+  @Test
+  @DisplayName("Test to find filtered flights with flight IATA AA123")
+  void whenFindFilteredFlightsWithFlightIataAA123_thenReturnFilteredFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
 
-    verify(flightRepository, VerificationModeFactory.times(5)).findAll();
+    List<Flight> found = flightServiceImpl.getFlights(null, null, null, "AA123");
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findAll();
+    assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
+  }
+
+  @Test
+  @DisplayName("Test to find filtered flights with flight IATA AA456")
+  void whenFindFilteredFlightsWithFlightIataAA456_thenReturnFilteredFlightList() {
+    AirportFlight origin2 = new AirportFlight();
+    origin2.setIata("LAX");
+    AirportFlight destination2 = new AirportFlight();
+    destination2.setIata("JFK");
+    Flight flight2 = new Flight();
+    flight2.setFlightIata("AA456");
+    flight2.setOrigin(origin2);
+    flight2.setDestination(destination2);
+    flight2.setAirline("TAP Air Portugal");
+
+    List<Flight> found = flightServiceImpl.getFlights(null, null, null, "AA456");
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findAll();
+    assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight2.getFlightIata());
+  }
+
+  @Test
+  @DisplayName("Test to find filtered flights from JFK")
+  void whenFindFilteredFlightsFromJFK_thenReturnFilteredFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
+
+    AirportFlight origin3 = new AirportFlight();
+    origin3.setIata("JFK");
+    AirportFlight destination3 = new AirportFlight();
+    destination3.setIata("MIA");
+    Flight flight3 = new Flight();
+    flight3.setFlightIata("AA789");
+    flight3.setOrigin(origin3);
+    flight3.setDestination(destination3);
+    flight3.setAirline("TAP Air Portugal");
+
+    List<Flight> found = flightServiceImpl.getFlights("JFK", null, null, null);
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findAll();
+    assertThat(found).hasSize(2).extracting(Flight::getFlightIata).contains(flight1.getFlightIata(),
+        flight3.getFlightIata());
+  }
+
+  @Test
+  @DisplayName("Test to find filtered flights of company American Airlines")
+  void whenFindFilteredFlightsCompanyAmericanAirlines_thenReturnFilteredFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
+
+    List<Flight> found = flightServiceImpl.getFlights(null, null, "American Airlines", null);
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).hasSize(1).extracting(Flight::getFlightIata).contains(flight1.getFlightIata());
   }
 
   @Test
   @DisplayName("Test to find filtered flights but not found")
   void whenFindFilteredFlights_thenReturnNotFoundFlights() {
-    List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", "AA456");
+    List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", null, "AA456");
 
     verify(flightRepository, VerificationModeFactory.times(1)).findAll();
     assertThat(found).isEmpty();

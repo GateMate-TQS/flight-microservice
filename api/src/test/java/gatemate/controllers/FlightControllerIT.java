@@ -70,14 +70,17 @@ class FlightControllerIT {
     flight1.setFlightIata("AA123");
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
     Flight flight2 = new Flight();
     flight2.setFlightIata("AA456");
     flight2.setOrigin(origin2);
     flight2.setDestination(destination2);
+    flight2.setAirline("TAP Air Portugal");
     Flight flight3 = new Flight();
     flight3.setFlightIata("AA789");
     flight3.setOrigin(origin3);
     flight3.setDestination(destination3);
+    flight3.setAirline("TAP Air Portugal");
 
     flightRepository.save(flight1);
     flightRepository.save(flight2);
@@ -298,6 +301,31 @@ class FlightControllerIT {
         .body("[1].origin.iata", is(flight3.getOrigin().getIata()))
         .and()
         .body("[1].destination.iata", is(flight3.getDestination().getIata()));
+  }
+
+  @Test
+  @DisplayName("Test to get filtered flights of company American Airlines")
+  void whenGetFilteredFlightsCompanyAmericanAirlines_thenReturnFilteredFlightList() {
+    Flight flight1 = flightRepository.findByFlightIata("AA123");
+
+    RestAssuredMockMvc.given()
+        .param("company", "American Airlines")
+        .when()
+        .get("/flights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(1))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin.iata", is(flight1.getOrigin().getIata()))
+        .and()
+        .body("[0].destination.iata", is(flight1.getDestination().getIata()))
+        .and()
+        .body("[0].airline", is(flight1.getAirline()));
   }
 
   @Test

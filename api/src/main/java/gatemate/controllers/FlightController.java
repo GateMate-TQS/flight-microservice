@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import gatemate.consumer.FlightDataConsumer;
 import gatemate.entities.Flight;
 import gatemate.services.FlightService;
 
@@ -24,7 +25,7 @@ public class FlightController {
       @RequestParam(name = "company", required = false) String company,
       @RequestParam(name = "flightIata", required = false) String flightIata) {
 
-    List<Flight> flights = flightService.getFlights(from, to, flightIata);
+    List<Flight> flights = flightService.getFlights(from, to, company, flightIata);
 
     if (flights.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
