@@ -37,6 +37,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     AirportFlight origin2 = new AirportFlight();
     origin2.setIata("LAX");
@@ -47,6 +48,7 @@ class FlightServiceTest {
     flight2.setOrigin(origin2);
     flight2.setDestination(destination2);
     flight2.setAirline("TAP Air Portugal");
+    flight2.setPrice(300);
 
     AirportFlight origin3 = new AirportFlight();
     origin3.setIata("JFK");
@@ -57,6 +59,7 @@ class FlightServiceTest {
     flight3.setOrigin(origin3);
     flight3.setDestination(destination3);
     flight3.setAirline("TAP Air Portugal");
+    flight3.setPrice(400);
 
     lenient().when(flightRepository.findAll()).thenReturn(Arrays.asList(flight1, flight2, flight3));
     lenient().when(flightRepository.findByFlightIata("AA123")).thenReturn(flight1);
@@ -74,6 +77,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     AirportFlight origin2 = new AirportFlight();
     origin2.setIata("LAX");
@@ -84,6 +88,7 @@ class FlightServiceTest {
     flight2.setOrigin(origin2);
     flight2.setDestination(destination2);
     flight2.setAirline("TAP Air Portugal");
+    flight2.setPrice(300);
 
     AirportFlight origin3 = new AirportFlight();
     origin3.setIata("JFK");
@@ -94,6 +99,7 @@ class FlightServiceTest {
     flight3.setOrigin(origin3);
     flight3.setDestination(destination3);
     flight3.setAirline("TAP Air Portugal");
+    flight3.setPrice(400);
 
     List<Flight> found = flightServiceImpl.getFlights(null, null, null, null);
 
@@ -114,6 +120,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", null, "AA123");
 
@@ -133,6 +140,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     List<Flight> found = flightServiceImpl.getFlights(null, "LAX", null, "AA123");
 
@@ -152,6 +160,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     List<Flight> found = flightServiceImpl.getFlights("JFK", null, null, "AA123");
 
@@ -171,6 +180,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     List<Flight> found = flightServiceImpl.getFlights("JFK", "LAX", null, null);
 
@@ -190,6 +200,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     List<Flight> found = flightServiceImpl.getFlights(null, null, null, "AA123");
 
@@ -209,6 +220,7 @@ class FlightServiceTest {
     flight2.setOrigin(origin2);
     flight2.setDestination(destination2);
     flight2.setAirline("TAP Air Portugal");
+    flight2.setPrice(300);
 
     List<Flight> found = flightServiceImpl.getFlights(null, null, null, "AA456");
 
@@ -228,6 +240,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     AirportFlight origin3 = new AirportFlight();
     origin3.setIata("JFK");
@@ -238,6 +251,7 @@ class FlightServiceTest {
     flight3.setOrigin(origin3);
     flight3.setDestination(destination3);
     flight3.setAirline("TAP Air Portugal");
+    flight3.setPrice(400);
 
     List<Flight> found = flightServiceImpl.getFlights("JFK", null, null, null);
 
@@ -258,6 +272,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     List<Flight> found = flightServiceImpl.getFlights(null, null, "American Airlines", null);
 
@@ -286,6 +301,7 @@ class FlightServiceTest {
     flight1.setOrigin(origin1);
     flight1.setDestination(destination1);
     flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
 
     Flight found = flightServiceImpl.getFlightInfo("AA123");
 

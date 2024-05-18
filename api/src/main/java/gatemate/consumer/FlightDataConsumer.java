@@ -97,6 +97,7 @@ public class FlightDataConsumer {
         flight.setAircraft(aircraft);
         flight.setOrigin(departure);
         flight.setDestination(arrival);
+        flight.setPrice((int) (Math.random() * 600));
         flight.setUpdated(currentTime);
 
         return flight;
