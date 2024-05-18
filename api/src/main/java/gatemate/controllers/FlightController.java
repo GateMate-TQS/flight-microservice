@@ -24,7 +24,7 @@ public class FlightController {
       @RequestParam(name = "company", required = false) String company,
       @RequestParam(name = "flightIata", required = false) String flightIata) {
 
-    List<Flight> flights = flightService.getFlights(from, to, flightIata);
+    List<Flight> flights = flightService.getFlights(from, to, company, flightIata);
 
     if (flights.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
