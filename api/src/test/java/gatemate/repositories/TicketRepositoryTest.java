@@ -13,7 +13,7 @@ import java.util.List;
 import gatemate.entities.Ticket;
 
 @DataJpaTest
-public class TicketRepositoryTest {
+class TicketRepositoryTest {
 
     @Autowired
     private TestEntityManager entityManager;

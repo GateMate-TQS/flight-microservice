@@ -18,7 +18,7 @@ import gatemate.entities.Ticket;
 import gatemate.repositories.TicketsRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class TicketServiceTest {
+class TicketServiceTest {
 
     @Mock
     private TicketsRepository ticketsRepository;
@@ -58,7 +58,7 @@ public class TicketServiceTest {
 
         List<Ticket> allTickets = ticketsService.getALLTickets();
 
-        assertThat(allTickets.size()).isEqualTo(2);
+        assertThat(allTickets).hasSize(2);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class TicketServiceTest {
 
         List<Ticket> foundTickets = ticketsService.getTickets(1L);
 
-        assertThat(foundTickets.size()).isEqualTo(2);
+        assertThat(foundTickets).hasSize(2);
     }
 
     @Test

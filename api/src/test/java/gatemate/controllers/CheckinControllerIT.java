@@ -22,7 +22,7 @@ import gatemate.services.TicketsService;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest
-public class CheckinControllerIT {
+class CheckinControllerIT {
     @Autowired
     private MockMvc mockMvc;
 
