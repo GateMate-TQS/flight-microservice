@@ -40,4 +40,5 @@ public class FlightServiceImpl implements FlightService {
   public Flight getFlightInfo(String flightIata) {
     return flightRepository.findByFlightIata(flightIata);
   }
+
 }
