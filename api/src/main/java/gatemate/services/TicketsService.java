@@ -10,7 +10,7 @@ public interface TicketsService {
 
     public List<Ticket> getTickets(Long userId);
 
-    public Ticket createTicket(Long userId, String iataFlight, String seat);
+    public Ticket createTicket(Long userId, String iataFlight);
 
     public List<Ticket> getALLTickets();
 
