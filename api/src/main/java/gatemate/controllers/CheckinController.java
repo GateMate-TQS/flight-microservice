@@ -27,7 +27,7 @@ public class CheckinController {
     }
 
     @GetMapping("/tickets/{ticketId}")
-    public ResponseEntity<?> getTicket(@PathVariable Long ticketId) {
+    public ResponseEntity<Object> getTicket(@PathVariable Long ticketId) {
         Ticket ticket = ticketsService.getTicket(ticketId);
         if (ticket != null) {
             return ResponseEntity.ok(ticket);

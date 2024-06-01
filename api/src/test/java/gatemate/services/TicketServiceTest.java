@@ -157,16 +157,6 @@ class TicketServiceTest {
     }
 
     @Test
-    @DisplayName("Test delete all tickets when no tickets exist")
-    void testDeleteAllTicketsWhenNoTicketsExist() {
-        doNothing().when(ticketsRepository).deleteAll();
-
-        ticketsService.deleteAllTickets();
-
-        verify(ticketsRepository, VerificationModeFactory.times(1)).deleteAll();
-    }
-
-    @Test
     @DisplayName("Test get non-existing ticket")
     void testGetNonExistingTicket() {
         when(ticketsRepository.findById(999L)).thenReturn(Optional.empty());

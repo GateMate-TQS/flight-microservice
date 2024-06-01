@@ -41,7 +41,7 @@ class CheckinControllerTest {
 
     @Test
     @DisplayName("POST /checkin/create with valid data should return 200 OK")
-    void checkinWithValidDataShouldReturnOk() throws Exception {
+    void checkinWithValidDataShouldReturnOk() {
         when(ticketsService.createTicket(1L, "iataFlight")).thenReturn(ticket);
 
         RestAssuredMockMvc.given()
@@ -59,7 +59,7 @@ class CheckinControllerTest {
 
     @Test
     @DisplayName("POST /checkin/create with invalid data should return 400 Bad Request")
-    void checkinWithInvalidDataShouldReturnBadRequest() throws Exception {
+    void checkinWithInvalidDataShouldReturnBadRequest() {
         when(ticketsService.createTicket(1L, "iataFlight")).thenReturn(null);
 
         RestAssuredMockMvc.given()
@@ -78,7 +78,7 @@ class CheckinControllerTest {
 
     @Test
     @DisplayName("GET /checkin/tickets/{ticketId} with no data should return 404 Not Found")
-    void getTicketWithNoDataShouldReturnNotFound() throws Exception {
+    void getTicketWithNoDataShouldReturnNotFound() {
         when(ticketsService.getTicket(1L)).thenReturn(null);
 
         RestAssuredMockMvc.given()
@@ -93,7 +93,7 @@ class CheckinControllerTest {
 
     @Test
     @DisplayName("GET /checkin/tickets/{ticketId} with data should return 200 OK")
-    void getTicketWithDataShouldReturnOk() throws Exception {
+    void getTicketWithDataShouldReturnOk() {
         when(ticketsService.getTicket(1L)).thenReturn(ticket);
 
         RestAssuredMockMvc.given()
