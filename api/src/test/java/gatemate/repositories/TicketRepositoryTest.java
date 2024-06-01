@@ -21,7 +21,7 @@ class TicketRepositoryTest {
     private TicketsRepository ticketRepository;
 
     @Test
-    @DisplayName("Find ticket by id")
+    @DisplayName("When save Ticket then return Ticket")
     void whenFindTicketByExistingId_thenReturnTicket() {
         Ticket ticket = new Ticket();
         entityManager.persistAndFlush(ticket);
@@ -33,7 +33,7 @@ class TicketRepositoryTest {
     }
 
     @Test
-    @DisplayName("Find ticket by invalid id")
+    @DisplayName("When find TicketById with invalid id then return null")
     void whenInvalidId_thenReturnNull() {
         Ticket ticketdb = ticketRepository.findById(-1L).orElse(null);
 
@@ -41,7 +41,7 @@ class TicketRepositoryTest {
     }
 
     @Test
-    @DisplayName("Find all tickets")
+    @DisplayName("When save Ticket then return Ticket")
     void givenSetOfTickets_whenFindAll_thenReturnSet() {
         Ticket ticket1 = new Ticket();
         ticket1.setIataFlight("FirstFlight");
@@ -59,7 +59,7 @@ class TicketRepositoryTest {
     }
 
     @Test
-    @DisplayName("Delete all tickets")
+    @DisplayName("When update Ticket then return Ticket with updated data")
     void deleteAllTickets() {
         Ticket ticket1 = new Ticket();
         ticket1.setIataFlight("FirstFlight");
