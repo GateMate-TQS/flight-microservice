@@ -41,35 +41,34 @@ class CheckinControllerTest {
         ticket.setId(1L);
         ticket.setUserId(1L);
         ticket.setIataFlight("iataFlight");
-        ticket.setSeat("seat");
+        ticket.setSeat("A1");
     }
 
     @Test
     @DisplayName("POST /checkin/create with valid data should return 200 OK")
     void checkinWithValidDataShouldReturnOk() {
-        when(ticketsService.createTicket(1L, "iataFlight", "seat")).thenReturn(ticket);
+        when(ticketsService.createTicket(1L, "iataFlight")).thenReturn(ticket);
 
         RestAssuredMockMvc.given()
                 .contentType(ContentType.JSON)
                 .param("userId", 1L)
                 .param("iataFlight", "iataFlight")
-                .param("seat", "seat")
                 .when()
                 .post("/checkin/create")
                 .then()
                 .statusCode(200);
 
-        verify(ticketsService, times(1)).createTicket(1L, "iataFlight", "seat");
+        verify(ticketsService, times(1)).createTicket(1L, "iataFlight");
     }
 
     @Test
-    @DisplayName("GET /checkin/Alltickets with no data should return 404 Not Found")
+    @DisplayName("GET /checkin/alltickets with no data should return 404 Not Found")
     void getAllTicketsWithNoDataShouldReturnNotFound() {
         when(ticketsService.getALLTickets()).thenReturn(Arrays.asList());
 
         RestAssuredMockMvc.given()
                 .when()
-                .get("/checkin/Alltickets")
+                .get("/checkin/alltickets")
                 .then()
                 .statusCode(404);
 
@@ -77,13 +76,13 @@ class CheckinControllerTest {
     }
 
     @Test
-    @DisplayName("GET /checkin/Alltickets with data should return 200 OK")
+    @DisplayName("GET /checkin/alltickets with data should return 200 OK")
     void getAllTicketsWithDataShouldReturnOk() {
         when(ticketsService.getALLTickets()).thenReturn(Arrays.asList(ticket));
 
         RestAssuredMockMvc.given()
                 .when()
-                .get("/checkin/Alltickets")
+                .get("/checkin/alltickets")
                 .then()
                 .statusCode(200)
                 .body("$", hasSize(1))

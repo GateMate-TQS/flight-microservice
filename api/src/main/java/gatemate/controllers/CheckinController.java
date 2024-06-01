@@ -20,13 +20,12 @@ public class CheckinController {
     @PostMapping("/create")
     public ResponseEntity<String> checkin(
             @RequestParam Long userId,
-            @RequestParam String iataFlight,
-            @RequestParam String seat) {
-        ticketsService.createTicket(userId, iataFlight, seat);
+            @RequestParam String iataFlight) {
+        ticketsService.createTicket(userId, iataFlight);
         return new ResponseEntity<>("Checked in", HttpStatus.OK);
     }
 
-    @GetMapping("/Alltickets")
+    @GetMapping("/alltickets")
     public ResponseEntity<List<Ticket>> getAllTickets() {
         List<Ticket> tickets = ticketsService.getALLTickets();
 
