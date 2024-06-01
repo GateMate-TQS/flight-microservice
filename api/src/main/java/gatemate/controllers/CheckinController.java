@@ -2,9 +2,6 @@ package gatemate.controllers;
 
 import lombok.AllArgsConstructor;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,41 +18,21 @@ public class CheckinController {
     public ResponseEntity<String> checkin(
             @RequestParam Long userId,
             @RequestParam String iataFlight) {
-        ticketsService.createTicket(userId, iataFlight);
-        return new ResponseEntity<>("Checked in", HttpStatus.OK);
-    }
-
-    @GetMapping("/alltickets")
-    public ResponseEntity<List<Ticket>> getAllTickets() {
-        List<Ticket> tickets = ticketsService.getALLTickets();
-
-        if (tickets.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Ticket createdTicket = ticketsService.createTicket(userId, iataFlight);
+        if (createdTicket != null) {
+            return ResponseEntity.ok("Checked in. Ticket ID: " + createdTicket.getId());
         } else {
-            return new ResponseEntity<>(tickets, HttpStatus.OK);
+            return ResponseEntity.badRequest().body("Unable to check in. Seats may be unavailable.");
         }
     }
 
-    @GetMapping("/{ticketId}")
-    public ResponseEntity<Ticket> getTicket(@PathVariable Long ticketId) {
+    @GetMapping("/tickets/{ticketId}")
+    public ResponseEntity<Object> getTicket(@PathVariable Long ticketId) {
         Ticket ticket = ticketsService.getTicket(ticketId);
-
-        if (ticket == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (ticket != null) {
+            return ResponseEntity.ok(ticket);
         } else {
-            return new ResponseEntity<>(ticket, HttpStatus.OK);
+            return ResponseEntity.notFound().build();
         }
     }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Ticket>> getTickets(@PathVariable Long userId) {
-        List<Ticket> tickets = ticketsService.getTickets(userId);
-
-        if (tickets.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(tickets, HttpStatus.OK);
-        }
-    }
-
 }

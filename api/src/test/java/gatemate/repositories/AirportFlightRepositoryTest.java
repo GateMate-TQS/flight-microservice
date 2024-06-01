@@ -8,8 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import gatemate.entities.AirportFlight;
 
 @DataJpaTest
@@ -20,40 +18,43 @@ class AirportFlightRepositoryTest {
   private AirportFlightRepository airportFlightRepository;
 
   @Test
-  @DisplayName("Find airportFlight by id")
-  void whenFindFlightByExistingId_thenReturnFlight() {
+  @DisplayName("When save AirportFlight then return AirportFlight")
+  void whenSaveAirportFlight_thenFindItById() {
     AirportFlight airportFlight = new AirportFlight();
+    airportFlight.setName("Lisbon");
+
+    AirportFlight savedAirportFlight = airportFlightRepository.save(airportFlight);
+
+    AirportFlight foundAirportFlight = entityManager.find(AirportFlight.class, savedAirportFlight.getId());
+    assertThat(foundAirportFlight).isNotNull();
+    assertThat(foundAirportFlight.getId()).isEqualTo(savedAirportFlight.getId());
+    assertThat(foundAirportFlight.getName()).isEqualTo("Lisbon");
+  }
+
+  @Test
+  @DisplayName("When find AirportFlightById with valid id then return AirportFlight")
+  void whenDeleteAirportFlight_thenCannotFindItById() {
+    AirportFlight airportFlight = new AirportFlight();
+    airportFlight.setName("Madrid");
     entityManager.persistAndFlush(airportFlight);
 
-    AirportFlight airportFlightdb = airportFlightRepository.findById(airportFlight.getId()).orElse(null);
+    airportFlightRepository.delete(airportFlight);
 
-    assertThat(airportFlightdb).isNotNull();
-    assertThat(airportFlightdb.getId()).isEqualTo(airportFlightdb.getId());
+    assertThat(airportFlightRepository.findById(airportFlight.getId())).isEmpty();
   }
 
   @Test
-  @DisplayName("Find airportFlight by invalid id")
-  void whenInvalidId_thenReturnNull() {
-    AirportFlight airportFlightdb = airportFlightRepository.findById(-1L).orElse(null);
+  @DisplayName("When update AirportFlight then return AirportFlight with updated data")
+  void whenUpdateAirportFlight_thenAirportFlightIsUpdated() {
+    AirportFlight airportFlight = new AirportFlight();
+    airportFlight.setName("Paris");
+    entityManager.persistAndFlush(airportFlight);
 
-    assertThat(airportFlightdb).isNull();
-  }
+    AirportFlight foundAirportFlight = entityManager.find(AirportFlight.class, airportFlight.getId());
+    foundAirportFlight.setName("London");
+    airportFlightRepository.save(foundAirportFlight);
 
-  @Test
-  @DisplayName("Find all airportFlights")
-  void givenSetOfFlights_whenFindAll_thenReturnSet() {
-    AirportFlight airportFlight1 = new AirportFlight();
-    airportFlight1.setName("Lisbon");
-    AirportFlight airportFlight2 = new AirportFlight();
-    airportFlight2.setName("Madrid");
-
-    entityManager.persistAndFlush(airportFlight1);
-    entityManager.persistAndFlush(airportFlight2);
-
-    List<AirportFlight> aircraftList = airportFlightRepository.findAll();
-    assertThat(aircraftList)
-        .hasSize(2)
-        .extracting(AirportFlight::getName)
-        .contains(airportFlight1.getName(), airportFlight2.getName());
+    AirportFlight updatedAirportFlight = entityManager.find(AirportFlight.class, airportFlight.getId());
+    assertThat(updatedAirportFlight.getName()).isEqualTo("London");
   }
 }
