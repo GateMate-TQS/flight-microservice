@@ -55,6 +55,10 @@ public class TicketsServiceImpl implements TicketsService {
             }
         }
 
+        if (seat == null) {
+            return null;
+        }
+
         seats.setOccuped(seats.getOccuped() + seat + ",");
         Ticket ticket = new Ticket();
         ticket.setUserId(userId);

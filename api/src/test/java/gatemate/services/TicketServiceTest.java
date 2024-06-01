@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,8 +48,8 @@ class TicketServiceTest {
         ticket.setSeat("1A");
 
         seats = new Seats();
-        seats.setMaxRows(10);
-        seats.setMaxCols(4);
+        seats.setMaxRows(1);
+        seats.setMaxCols(3);
         seats.setOccuped("");
 
         aircraft = new Aircraft();
@@ -142,4 +143,37 @@ class TicketServiceTest {
 
         verify(ticketsRepository, VerificationModeFactory.times(1)).deleteAll();
     }
+
+    @Test
+    @DisplayName("Test save ticket with occupied seat")
+    void testSaveTicketWithOccupiedSeat() {
+        seats.setOccuped("1A,1B,1C"); // Assuming these seats are already occupied
+        when(flightsService.getFlightInfo("IATA")).thenReturn(flight);
+        lenient().when(ticketsRepository.save(any(Ticket.class))).thenReturn(ticket);
+
+        Ticket savedTicket = ticketsService.createTicket(1L, "IATA");
+
+        assertThat(savedTicket).isNull(); // The ticket should not be saved because all the seats are occupied
+    }
+
+    @Test
+    @DisplayName("Test delete all tickets when no tickets exist")
+    void testDeleteAllTicketsWhenNoTicketsExist() {
+        doNothing().when(ticketsRepository).deleteAll();
+
+        ticketsService.deleteAllTickets();
+
+        verify(ticketsRepository, VerificationModeFactory.times(1)).deleteAll();
+    }
+
+    @Test
+    @DisplayName("Test get non-existing ticket")
+    void testGetNonExistingTicket() {
+        when(ticketsRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Ticket found = ticketsService.getTicket(999L);
+
+        assertThat(found).isNull();
+    }
+
 }
