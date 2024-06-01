@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.isA;
 
 import gatemate.entities.Ticket;
 import gatemate.services.TicketsService;
@@ -39,7 +40,6 @@ class CheckinControllerIT {
         ticket.setId(1L);
         ticket.setUserId(1L);
         ticket.setIataFlight("iataFlight");
-        ticket.setSeat("seat");
     }
 
     @AfterEach
@@ -54,7 +54,6 @@ class CheckinControllerIT {
                 .contentType(ContentType.JSON)
                 .param("userId", 1L)
                 .param("iataFlight", "iataFlight")
-                .param("seat", "seat")
                 .when()
                 .post("/checkin/create")
                 .then()
@@ -66,16 +65,16 @@ class CheckinControllerIT {
     void getAllTicketsShouldReturnAllTickets() {
         RestAssuredMockMvc.given()
                 .when()
-                .get("/checkin/Alltickets")
+                .get("/checkin/alltickets")
                 .then()
                 .statusCode(200)
                 .body("", hasSize(0));
 
-        ticketsService.createTicket(1L, "iataFlight", "seat");
+        ticketsService.createTicket(1L, "iataFlight");
 
         RestAssuredMockMvc.given()
                 .when()
-                .get("/checkin/Alltickets")
+                .get("/checkin/alltickets")
                 .then()
                 .statusCode(200)
                 .body("", hasSize(1));
@@ -84,7 +83,7 @@ class CheckinControllerIT {
     @Test
     @DisplayName("GET /checkin/{ticketId} with valid id should return ticket")
     void getTicketWithValidIdShouldReturnTicket() {
-        ticketsService.createTicket(1L, "iataFlight", "seat");
+        ticketsService.createTicket(1L, "iataFlight");
 
         RestAssuredMockMvc.given()
                 .when()
@@ -93,7 +92,8 @@ class CheckinControllerIT {
                 .statusCode(200)
                 .body("userId", is(1))
                 .body("iataFlight", is("iataFlight"))
-                .body("seat", is("seat"));
+                // seat é do tipo string random
+                .body("seat", isA(String.class));
     }
 
     @Test
@@ -109,7 +109,7 @@ class CheckinControllerIT {
     @Test
     @DisplayName("GET /checkin/user/{userId} with valid id should return tickets")
     void getTicketsWithValidIdShouldReturnTickets() {
-        ticketsService.createTicket(1L, "iataFlight", "seat");
+        ticketsService.createTicket(1L, "iataFlight");
 
         RestAssuredMockMvc.given()
                 .when()

@@ -8,13 +8,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import gatemate.entities.Flight;
+import gatemate.entities.Seats;
 import gatemate.entities.Ticket;
+import gatemate.entities.Aircraft;
 import gatemate.repositories.TicketsRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,10 +28,16 @@ class TicketServiceTest {
     @Mock
     private TicketsRepository ticketsRepository;
 
+    @Mock
+    private FlightService flightsService;
+
     @InjectMocks
     private TicketsServiceImpl ticketsService;
 
     private Ticket ticket;
+    private Flight flight;
+    private Aircraft aircraft;
+    private Seats seats;
 
     @BeforeEach
     void setUp() {
@@ -34,6 +45,17 @@ class TicketServiceTest {
         ticket.setUserId(1L);
         ticket.setIataFlight("IATA");
         ticket.setSeat("1A");
+
+        seats = new Seats();
+        seats.setMaxRows(10);
+        seats.setMaxCols(4);
+        seats.setOccuped("");
+
+        aircraft = new Aircraft();
+        aircraft.setSeats(seats);
+
+        flight = new Flight();
+        flight.setAircraft(aircraft);
     }
 
     @Test
@@ -64,9 +86,10 @@ class TicketServiceTest {
     @Test
     @DisplayName("Test save ticket")
     void testSaveTicket() {
+        when(flightsService.getFlightInfo("IATA")).thenReturn(flight);
         when(ticketsRepository.save(any(Ticket.class))).thenReturn(ticket);
 
-        Ticket savedTicket = ticketsService.createTicket(1L, "IATA", "1A");
+        Ticket savedTicket = ticketsService.createTicket(1L, "IATA");
 
         assertThat(savedTicket).isNotNull();
 
@@ -119,5 +142,4 @@ class TicketServiceTest {
 
         verify(ticketsRepository, VerificationModeFactory.times(1)).deleteAll();
     }
-
 }

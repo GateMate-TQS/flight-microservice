@@ -13,6 +13,7 @@ import gatemate.repositories.TicketsRepository;
 public class TicketsServiceImpl implements TicketsService {
 
     private final TicketsRepository ticketsRepository;
+
     private final FlightService flightsService;
 
     public TicketsServiceImpl(TicketsRepository ticketsRepository, FlightService flightsService) {
