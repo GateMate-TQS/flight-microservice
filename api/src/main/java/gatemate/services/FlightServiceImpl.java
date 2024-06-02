@@ -41,4 +41,9 @@ public class FlightServiceImpl implements FlightService {
     return flightRepository.findByFlightIata(flightIata);
   }
 
+  @Override
+  public List<Flight> getAllFlights() {
+    return flightRepository.findAll();
+  }
+
 }

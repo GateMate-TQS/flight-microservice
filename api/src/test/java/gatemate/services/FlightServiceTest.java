@@ -126,6 +126,8 @@ class FlightServiceTest {
     lenient().when(flightRepository.findByStatus("active"))
         .thenReturn(Arrays.asList(flight4, flight5, flight6, flight7));
     lenient().when(flightRepository.findByFlightIata("AA123")).thenReturn(flight1);
+    lenient().when(flightRepository.findAll())
+        .thenReturn(Arrays.asList(flight1, flight2, flight3, flight4, flight5, flight6, flight7));
   }
 
   @Test
@@ -642,4 +644,52 @@ class FlightServiceTest {
     verify(flightRepository, VerificationModeFactory.times(1)).findByFlightIata("AA456");
     assertThat(found).isNull();
   }
+
+  @Test
+  @DisplayName("Find all flights")
+  void whenFindAll_thenReturnFlightList() {
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
+    flight1.setPrice(200);
+    flight1.setStatus("scheduled");
+
+    AirportFlight origin2 = new AirportFlight();
+    origin2.setIata("LAX");
+    AirportFlight destination2 = new AirportFlight();
+    destination2.setIata("JFK");
+    Flight flight2 = new Flight();
+    flight2.setFlightIata("AA456");
+    flight2.setOrigin(origin2);
+    flight2.setDestination(destination2);
+    flight2.setAirline("TAP Air Portugal");
+    flight2.setPrice(300);
+    flight2.setStatus("scheduled");
+
+    AirportFlight origin3 = new AirportFlight();
+    origin3.setIata("JFK");
+    AirportFlight destination3 = new AirportFlight();
+    destination3.setIata("MIA");
+    Flight flight3 = new Flight();
+    flight3.setFlightIata("AA789");
+    flight3.setOrigin(origin3);
+    flight3.setDestination(destination3);
+    flight3.setAirline("TAP Air Portugal");
+    flight3.setPrice(400);
+    flight3.setStatus("scheduled");
+
+    List<Flight> found = flightServiceImpl.getAllFlights();
+
+    verify(flightRepository, VerificationModeFactory.times(1)).findAll();
+
+    assertThat(found).hasSize(7).extracting(Flight::getFlightIata).contains(flight1.getFlightIata(),
+        flight2.getFlightIata(), flight3.getFlightIata());
+  }
+
 }

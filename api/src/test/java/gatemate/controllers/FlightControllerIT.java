@@ -713,4 +713,68 @@ class FlightControllerIT {
         .assertThat()
         .statusCode(404);
   }
+
+  @Test
+  @DisplayName("Get all flights")
+  void whenGetAllFlights_thenReturnFlightList() {
+    Flight flight1 = flightRepository.findByFlightIata("AA123");
+    Flight flight2 = flightRepository.findByFlightIata("AA212");
+    Flight flight3 = flightRepository.findByFlightIata("AA789");
+    Flight flight4 = flightRepository.findByFlightIata("BB123");
+    Flight flight5 = flightRepository.findByFlightIata("BB789");
+
+    RestAssuredMockMvc.given()
+        .when()
+        .get("/allFlights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(5))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin.iata", is(flight1.getOrigin().getIata()))
+        .and()
+        .body("[0].destination.iata", is(flight1.getDestination().getIata()))
+        .and()
+        .body("[1].flightIata", is(flight2.getFlightIata()))
+        .and()
+        .body("[1].origin.iata", is(flight2.getOrigin().getIata()))
+        .and()
+        .body("[1].destination.iata", is(flight2.getDestination().getIata()))
+        .and()
+        .body("[2].flightIata", is(flight3.getFlightIata()))
+        .and()
+        .body("[2].origin.iata", is(flight3.getOrigin().getIata()))
+        .and()
+        .body("[2].destination.iata", is(flight3.getDestination().getIata()))
+        .and()
+        .body("[3].flightIata", is(flight4.getFlightIata()))
+        .and()
+        .body("[3].origin.iata", is(flight4.getOrigin().getIata()))
+        .and()
+        .body("[3].destination.iata", is(flight4.getDestination().getIata()))
+        .and()
+        .body("[4].flightIata", is(flight5.getFlightIata()))
+        .and()
+        .body("[4].origin.iata", is(flight5.getOrigin().getIata()))
+        .and()
+        .body("[4].destination.iata", is(flight5.getDestination().getIata()));
+
+  }
+
+  @Test
+  @DisplayName("Get all flights but not found")
+  void whenGetAllFlightsNotFound_thenReturnNotFound() {
+    flightRepository.deleteAll();
+
+    RestAssuredMockMvc.given()
+        .when()
+        .get("/allFlights")
+        .then()
+        .assertThat()
+        .statusCode(404);
+  }
 }
