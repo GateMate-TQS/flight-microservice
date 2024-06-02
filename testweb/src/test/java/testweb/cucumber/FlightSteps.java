@@ -47,7 +47,6 @@ public class FlightSteps {
     private AdminPage adminPage;
     private UserTicketsPage userTicketsPage;
 
-    private String pass = "";
 
     @Before
     public void setUp() {
@@ -152,7 +151,8 @@ public class FlightSteps {
 
     @Then("the user is redirected to the details page of the flight")
     public void the_user_is_redirected_to_the_details_page_of_the_flight() {
-        assertEquals("http://localhost/flightInfo/TK8104", driver.getCurrentUrl());
+        String iata = flightDetailsPage.getIata();
+        assertEquals("http://localhost/flightInfo/" + iata, driver.getCurrentUrl());
     }
 
     @Given("the user selects {string} as the from location")
@@ -173,12 +173,14 @@ public class FlightSteps {
 
     @When("the user clicks in the purchase button")
     public void the_user_clicks_in_the_purchase_ticket_button() {
+        flightDetailsPage.getIata();
         flightDetailsPage.clickPurchase();
     }
 
     @Then("the user is redirected to the ticket purchase page") 
     public void the_user_is_redirected_to_the_ticket_purchase_page() {
-        assertEquals("http://localhost/ticketPurchase/TK8104", driver.getCurrentUrl());
+        String iata = flightDetailsPage.getFlightIata();
+        assertEquals("http://localhost/ticketPurchase/" + iata, driver.getCurrentUrl());
         purchasePage = new PurchasePage(driver);
     }
 

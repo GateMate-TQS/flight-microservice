@@ -23,8 +23,22 @@ public class FlightDetailsPage {
         this.driver = driver;
     }
 
+    private String flightIata;
   
     public void clickPurchase() {
         purchaseButton.click();
+    }
+
+    public String getIata() {
+        WebElement iata = driver.findElement(By.xpath("//div[@id='root']/div/div[2]/div[2]/div/div[2]/p"));
+        String[] parts = iata.getText().split(" ");
+        String ia = parts[0];
+        this.flightIata = ia;
+        return ia;
+    }
+
+
+    public String getFlightIata() {
+        return this.flightIata;
     }
 }
