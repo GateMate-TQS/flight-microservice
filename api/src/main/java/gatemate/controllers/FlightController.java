@@ -14,7 +14,6 @@ import gatemate.services.FlightService;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/")
-@CrossOrigin(origins = "*")
 public class FlightController {
   private final FlightService flightService;
 
