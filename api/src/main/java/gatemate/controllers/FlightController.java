@@ -14,6 +14,7 @@ import gatemate.services.FlightService;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/")
+@CrossOrigin(origins = "*")
 public class FlightController {
   private final FlightService flightService;
 
@@ -25,6 +26,17 @@ public class FlightController {
       @RequestParam(name = "flightIata", required = false) String flightIata) {
 
     List<Flight> flights = flightService.getScheduledFlights(from, to, company, flightIata);
+
+    if (flights.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else {
+      return new ResponseEntity<>(flights, HttpStatus.OK);
+    }
+  }
+
+  @GetMapping("/allFlights")
+  public ResponseEntity<List<Flight>> getAllFlights() {
+    List<Flight> flights = flightService.getAllFlights();
 
     if (flights.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);

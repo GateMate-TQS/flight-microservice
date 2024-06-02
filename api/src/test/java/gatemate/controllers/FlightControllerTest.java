@@ -1045,4 +1045,98 @@ class FlightControllerTest {
 
     verify(flightService, times(1)).getFlightInfo("AA123");
   }
+
+  @Test
+  @DisplayName("Get all flights")
+  void whenGetAllFlights_thenReturnFlightList() {
+    Seats seats1 = new Seats();
+    seats1.setMaxCols(6);
+    seats1.setMaxRows(10);
+    Seats seats2 = new Seats();
+    seats2.setMaxCols(6);
+    seats2.setMaxRows(10);
+
+    Aircraft aircraft1 = new Aircraft();
+    aircraft1.setAircraftType("Boeing 777");
+    aircraft1.setSeats(seats1);
+    Aircraft aircraft2 = new Aircraft();
+    aircraft2.setAircraftType("Boeing 777");
+    aircraft2.setSeats(seats2);
+
+    AirportFlight origin1 = new AirportFlight();
+    origin1.setIata("JFK");
+    AirportFlight destination1 = new AirportFlight();
+    destination1.setIata("LAX");
+    AirportFlight origin2 = new AirportFlight();
+    origin2.setIata("LAX");
+    AirportFlight destination2 = new AirportFlight();
+    destination2.setIata("JFK");
+
+    LiveData liveData1 = new LiveData();
+    liveData1.setAltitude(100);
+    LiveData liveData2 = new LiveData();
+    liveData2.setAltitude(100);
+
+    Flight flight1 = new Flight();
+    flight1.setFlightIata("AA123");
+    flight1.setOrigin(origin1);
+    flight1.setDestination(destination1);
+    flight1.setAirline("American Airlines");
+    flight1.setAircraft(aircraft1);
+    flight1.setPrice(200);
+    flight1.setStatus("active");
+    flight1.setLiveData(liveData1);
+    Flight flight2 = new Flight();
+    flight2.setFlightIata("AA456");
+    flight2.setOrigin(origin2);
+    flight2.setDestination(destination2);
+    flight2.setAirline("TAP Air Portugal");
+    flight2.setAircraft(aircraft2);
+    flight2.setPrice(300);
+    flight2.setStatus("active");
+    flight2.setLiveData(liveData2);
+
+    when(flightService.getAllFlights()).thenReturn(Arrays.asList(flight1, flight2));
+
+    RestAssuredMockMvc.given()
+        .when()
+        .get("/allFlights")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.JSON)
+        .and()
+        .body("", hasSize(2))
+        .and()
+        .body("[0].flightIata", is(flight1.getFlightIata()))
+        .and()
+        .body("[0].origin.iata", is(flight1.getOrigin().getIata()))
+        .and()
+        .body("[0].destination.iata", is(flight1.getDestination().getIata()))
+        .and()
+        .body("[1].flightIata", is(flight2.getFlightIata()))
+        .and()
+        .body("[1].origin.iata", is(flight2.getOrigin().getIata()))
+        .and()
+        .body("[1].destination.iata", is(flight2.getDestination().getIata()));
+
+    verify(flightService, times(1)).getAllFlights();
+
+  }
+
+  @Test
+  @DisplayName("Get all flights but not found")
+  void whenGetAllFlightsNotFound_thenReturnNotFound() {
+    when(flightService.getAllFlights()).thenReturn(Arrays.asList());
+
+    RestAssuredMockMvc.given()
+        .when()
+        .get("/allFlights")
+        .then()
+        .assertThat()
+        .statusCode(404);
+
+    verify(flightService, times(1)).getAllFlights();
+
+  }
 }

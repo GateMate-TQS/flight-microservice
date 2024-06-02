@@ -10,4 +10,6 @@ public interface FlightService {
   public List<Flight> getActiveFlights(String from, String to, String company, String flightIata);
 
   public Flight getFlightInfo(String flightIata);
+
+  public List<Flight> getAllFlights();
 }
