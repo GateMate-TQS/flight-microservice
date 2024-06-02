@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/")
+@CrossOrigin(origins = "${cors.origin}")
 public class FlightController {
   private final FlightService flightService;
 
