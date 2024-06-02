@@ -43,7 +43,11 @@ public class FlightController {
     }
   }
 
-
+  @Operation(summary = "Obter todos os voos")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Voos encontrados", content = @Content(schema = @Schema(implementation = Flight.class))),
+      @ApiResponse(responseCode = "404", description = "Nenhum voo encontrado", content = @Content)
+  })
   @GetMapping("/allFlights")
   public ResponseEntity<List<Flight>> getAllFlights() {
     List<Flight> flights = flightService.getAllFlights();
