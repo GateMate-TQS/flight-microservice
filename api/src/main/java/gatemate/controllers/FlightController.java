@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import gatemate.entities.Flight;
 import gatemate.services.FlightService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @AllArgsConstructor
@@ -18,6 +23,11 @@ import gatemate.services.FlightService;
 public class FlightController {
   private final FlightService flightService;
 
+  @Operation(summary = "Obter voos agendados")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Voos encontrados", content = @Content(schema = @Schema(implementation = Flight.class))),
+      @ApiResponse(responseCode = "404", description = "Nenhum voo encontrado", content = @Content)
+  })
   @GetMapping("/scheduledFlights")
   public ResponseEntity<List<Flight>> getScheduledFlights(
       @RequestParam(name = "from", required = false) String from,
@@ -34,6 +44,7 @@ public class FlightController {
     }
   }
 
+
   @GetMapping("/allFlights")
   public ResponseEntity<List<Flight>> getAllFlights() {
     List<Flight> flights = flightService.getAllFlights();
@@ -45,6 +56,11 @@ public class FlightController {
     }
   }
 
+  @Operation(summary = "Obter voos ativos")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Voos encontrados", content = @Content(schema = @Schema(implementation = Flight.class))),
+      @ApiResponse(responseCode = "404", description = "Nenhum voo encontrado", content = @Content)
+  })
   @GetMapping("/activeFlights")
   public ResponseEntity<List<Flight>> getActiveFlights(
       @RequestParam(name = "from", required = false) String from,
@@ -61,6 +77,11 @@ public class FlightController {
     }
   }
 
+  @Operation(summary = "Obter informações do voo pelo código IATA")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Voo encontrado", content = @Content(schema = @Schema(implementation = Flight.class))),
+      @ApiResponse(responseCode = "404", description = "Voo não encontrado", content = @Content)
+  })
   @GetMapping("/flights/{flightIata}")
   public ResponseEntity<Flight> getFlightInfo(@PathVariable String flightIata) {
     Flight flight = flightService.getFlightInfo(flightIata);

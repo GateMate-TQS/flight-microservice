@@ -2,14 +2,16 @@ package gatemate.controllers;
 
 import lombok.AllArgsConstructor;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import gatemate.services.TicketsService;
 import gatemate.entities.Ticket;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @AllArgsConstructor
@@ -17,46 +19,35 @@ import gatemate.entities.Ticket;
 public class CheckinController {
     private final TicketsService ticketsService;
 
+    @Operation(summary = "Efetuar check-in e criar um ticket")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Check-in realizado com sucesso", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "400", description = "Não foi possível realizar o check-in", content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @PostMapping("/create")
     public ResponseEntity<String> checkin(
             @RequestParam Long userId,
-            @RequestParam String iataFlight,
-            @RequestParam String seat) {
-        ticketsService.createTicket(userId, iataFlight, seat);
-        return new ResponseEntity<>("Checked in", HttpStatus.OK);
-    }
-
-    @GetMapping("/Alltickets")
-    public ResponseEntity<List<Ticket>> getAllTickets() {
-        List<Ticket> tickets = ticketsService.getALLTickets();
-
-        if (tickets.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            @RequestParam String iataFlight) {
+        Ticket createdTicket = ticketsService.createTicket(userId, iataFlight);
+        if (createdTicket != null) {
+            return ResponseEntity.ok("Checked in. Ticket ID: " + createdTicket.getId());
         } else {
-            return new ResponseEntity<>(tickets, HttpStatus.OK);
+            return ResponseEntity.badRequest().body("Unable to check in. Seats may be unavailable.");
         }
     }
 
-    @GetMapping("/{ticketId}")
-    public ResponseEntity<Ticket> getTicket(@PathVariable Long ticketId) {
+    @Operation(summary = "Obter informações do ticket pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ticket encontrado", content = @Content(schema = @Schema(implementation = Ticket.class))),
+            @ApiResponse(responseCode = "404", description = "Ticket não encontrado", content = @Content)
+    })
+    @GetMapping("/tickets/{ticketId}")
+    public ResponseEntity<Object> getTicket(@PathVariable Long ticketId) {
         Ticket ticket = ticketsService.getTicket(ticketId);
-
-        if (ticket == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (ticket != null) {
+            return ResponseEntity.ok(ticket);
         } else {
-            return new ResponseEntity<>(ticket, HttpStatus.OK);
+            return ResponseEntity.notFound().build();
         }
     }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Ticket>> getTickets(@PathVariable Long userId) {
-        List<Ticket> tickets = ticketsService.getTickets(userId);
-
-        if (tickets.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(tickets, HttpStatus.OK);
-        }
-    }
-
 }

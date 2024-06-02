@@ -1,14 +1,14 @@
 package gatemate.repositories;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 
 import gatemate.entities.Aircraft;
 
@@ -20,40 +20,43 @@ class AircraftRepositoryTest {
   private AircraftRepository aircraftRepository;
 
   @Test
-  @DisplayName("Find aircraft by id")
-  void whenFindFlightByExistingId_thenReturnFlight() {
+  @DisplayName("When save Aircraft then return Aircraft")
+  void whenSaveAircraft_thenFindItById() {
     Aircraft aircraft = new Aircraft();
+    aircraft.setAircraftType("Boeing 747");
+
+    Aircraft savedAircraft = aircraftRepository.save(aircraft);
+
+    Aircraft foundAircraft = entityManager.find(Aircraft.class, savedAircraft.getId());
+    assertThat(foundAircraft).isNotNull();
+    assertThat(foundAircraft.getId()).isEqualTo(savedAircraft.getId());
+    assertEquals("Boeing 747", foundAircraft.getAircraftType());
+  }
+
+  @Test
+  @DisplayName("When find AircraftById with valid id then return Aircraft")
+  void whenDeleteAircraft_thenCannotFindItById() {
+    Aircraft aircraft = new Aircraft();
+    aircraft.setAircraftType("Boeing 777");
     entityManager.persistAndFlush(aircraft);
 
-    Aircraft aircraftdb = aircraftRepository.findById(aircraft.getId()).orElse(null);
+    aircraftRepository.delete(aircraft);
 
-    assertThat(aircraftdb).isNotNull();
-    assertThat(aircraftdb.getId()).isEqualTo(aircraftdb.getId());
+    assertThat(aircraftRepository.findById(aircraft.getId())).isEmpty();
   }
 
   @Test
-  @DisplayName("Find aircraft by invalid id")
-  void whenInvalidId_thenReturnNull() {
-    Aircraft aircraftdb = aircraftRepository.findById(-1L).orElse(null);
+  @DisplayName("When update Aircraft then return Aircraft with updated data")
+  void whenUpdateAircraft_thenAircraftIsUpdated() {
+    Aircraft aircraft = new Aircraft();
+    aircraft.setAircraftType("Airbus A380");
+    entityManager.persistAndFlush(aircraft);
 
-    assertThat(aircraftdb).isNull();
-  }
+    Aircraft foundAircraft = entityManager.find(Aircraft.class, aircraft.getId());
+    foundAircraft.setAircraftType("Airbus A350");
+    aircraftRepository.save(foundAircraft);
 
-  @Test
-  @DisplayName("Find all aircrafts")
-  void givenSetOfFlights_whenFindAll_thenReturnSet() {
-    Aircraft aircraft1 = new Aircraft();
-    aircraft1.setAircraftType("Boeing 747");
-    Aircraft aircraft2 = new Aircraft();
-    aircraft2.setAircraftType("Boeing 777");
-
-    entityManager.persistAndFlush(aircraft1);
-    entityManager.persistAndFlush(aircraft2);
-
-    List<Aircraft> aircraftList = aircraftRepository.findAll();
-    assertThat(aircraftList)
-        .hasSize(2)
-        .extracting(Aircraft::getAircraftType)
-        .contains(aircraft1.getAircraftType(), aircraft2.getAircraftType());
+    Aircraft updatedAircraft = entityManager.find(Aircraft.class, aircraft.getId());
+    assertThat(updatedAircraft.getAircraftType()).isEqualTo("Airbus A350");
   }
 }

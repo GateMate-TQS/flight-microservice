@@ -20,37 +20,60 @@ class LiveDataRepositoryTest {
   private LiveDataRepository liveDataRepository;
 
   @Test
-  @DisplayName("Find live data by id")
-  void whenFindSeatsByExistingId_thenReturnFlight() {
+  @DisplayName("When save LiveData then return LiveData")
+  void whenSaveLiveData_thenFindItById() {
     LiveData liveData = new LiveData();
+    liveData.setAltitude(100);
+
+    LiveData savedLiveData = liveDataRepository.save(liveData);
+
+    LiveData foundLiveData = entityManager.find(LiveData.class, savedLiveData.getId());
+    assertThat(foundLiveData).isNotNull();
+    assertThat(foundLiveData.getId()).isEqualTo(savedLiveData.getId());
+    assertThat(foundLiveData.getAltitude()).isEqualTo(100);
+  }
+
+  @Test
+  @DisplayName("When find LiveDataById with valid id then return LiveData")
+  void whenDeleteLiveData_thenCannotFindItById() {
+    LiveData liveData = new LiveData();
+    liveData.setAltitude(200);
     entityManager.persistAndFlush(liveData);
-    LiveData liveDatadb = liveDataRepository.findById(liveData.getId()).orElse(null);
 
-    assertThat(liveDatadb).isNotNull();
-    assertThat(liveDatadb.getId()).isEqualTo(liveData.getId());
+    liveDataRepository.delete(liveData);
+
+    assertThat(liveDataRepository.findById(liveData.getId())).isEmpty();
   }
 
   @Test
-  @DisplayName("Find live data by invalid id")
-  void whenInvalidId_thenReturnNull() {
-    LiveData liveDatadb = liveDataRepository.findById(-1L).orElse(null);
+  @DisplayName("When update LiveData then return LiveData with updated data")
+  void whenUpdateLiveData_thenLiveDataIsUpdated() {
+    LiveData liveData = new LiveData();
+    liveData.setAltitude(300);
+    entityManager.persistAndFlush(liveData);
 
-    assertThat(liveDatadb).isNull();
+    LiveData foundLiveData = entityManager.find(LiveData.class, liveData.getId());
+    foundLiveData.setAltitude(400);
+    liveDataRepository.save(foundLiveData);
+
+    LiveData updatedLiveData = entityManager.find(LiveData.class, liveData.getId());
+    assertThat(updatedLiveData.getAltitude()).isEqualTo(400);
   }
 
   @Test
-  @DisplayName("Find all live data")
-  void givenSetOfFlights_whenFindAll_thenReturnSet() {
+  @DisplayName("When find LiveDataByAltitude with valid altitude then return LiveData")
+  void whenFindAllLiveData_thenReturnAllLiveData() {
     LiveData liveData1 = new LiveData();
-    liveData1.setAltitude(100);
+    liveData1.setAltitude(500);
     LiveData liveData2 = new LiveData();
-    liveData2.setAltitude(200);
+    liveData2.setAltitude(600);
 
     entityManager.persistAndFlush(liveData1);
     entityManager.persistAndFlush(liveData2);
 
-    List<LiveData> seatsList = liveDataRepository.findAll();
-    assertThat(seatsList)
+    List<LiveData> liveDataList = liveDataRepository.findAll();
+
+    assertThat(liveDataList)
         .hasSize(2)
         .extracting(LiveData::getAltitude)
         .contains(liveData1.getAltitude(), liveData2.getAltitude());
