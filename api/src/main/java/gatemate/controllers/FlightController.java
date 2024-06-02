@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/")
+@CrossOrigin(origins = "http://localhost:8086")
 public class FlightController {
   private final FlightService flightService;
 
