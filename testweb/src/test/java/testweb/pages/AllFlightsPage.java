@@ -45,7 +45,6 @@ public class AllFlightsPage {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5)); 
 
         firstFlight = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='root']/div/div[2]/div[2]/div[3]/a/div/div/div/h3")));
-        System.out.println("First flight: " + firstFlight.getText());
         return firstFlight.isDisplayed();
     }
 
@@ -57,7 +56,6 @@ public class AllFlightsPage {
 
     public void filterTheFromLocation(String from) {
         try {
-            // Sleep for 2 seconds (2000 milliseconds) to wait for the value
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -99,7 +99,6 @@ public class FlightSteps {
     
     @Given("the user enters {string} as password")
     public void the_user_enters_as_password(String password) {
-        System.out.println("password: " + password);
         loginPage.enterPassword(password);
     }
 

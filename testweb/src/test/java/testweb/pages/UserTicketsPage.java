@@ -34,15 +34,7 @@ public class UserTicketsPage {
     }
 
     public boolean isCheckedIn() {
-        // System.out.println("Checked in: " + firstFlight.getText());
-        // System.out.println("Checked in: " + firstFlight.getCssValue("background-color"));
-        // String bgcolor = firstFlight.getCssValue("background-color");
-        // if (bgcolor.equals("rgba(29, 78, 216, 1)")) {
-        //     return true;
-        // }
-
-        // return false;
-
+      
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             WebElement firstFlight = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='root']/div/div[2]/div/div/div/div[2]/div/div[2]")));

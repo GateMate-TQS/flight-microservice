@@ -28,7 +28,7 @@ Feature: GateMate Home Page
     Given the user wants to purchase the flight
     When the user clicks in the purchase button
     Then the user is redirected to the login page
-    Given the user enters "borro@gmail.com" as email
+    Given the user enters "ab@gmail.com" as email
     And the user enters "123" as password
     When the user clicks to login
     Then the user loggedin and is redirected to the homepage
@@ -42,7 +42,7 @@ Feature: GateMate Home Page
     When the user clicks in the purchase button
     Then the user is redirected to the ticket purchase page
     Given the user enters "Dale" as name on the purchase form
-    And the user enters "borro@gmail.com" as email on the purchase form
+    And the user enters "ab@gmail.com" as email on the purchase form
     And the user enters "123123123" as cc Number on the purchase form
     And the user selects "Visa" in the card type on the purchase form
     And the user enters "123456789" as credit card Number on the purchase form
@@ -60,7 +60,7 @@ Feature: GateMate Home Page
     Given the user is on the homepage
     When the user clicks on the login button
     Then the user is redirected to the login page
-    Given the user enters "tolo@gmail.com" as email
+    Given the user enters "bc@gmail.com" as email
     And the user enters "123" as password
     When the user clicks to login
     Then the user loggedin and is redirected to the admin homepage
