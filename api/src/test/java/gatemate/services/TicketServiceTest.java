@@ -8,25 +8,37 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import gatemate.entities.Flight;
+import gatemate.entities.Seats;
 import gatemate.entities.Ticket;
+import gatemate.entities.Aircraft;
 import gatemate.repositories.TicketsRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class TicketServiceTest {
+class TicketServiceTest {
 
     @Mock
     private TicketsRepository ticketsRepository;
+
+    @Mock
+    private FlightService flightsService;
 
     @InjectMocks
     private TicketsServiceImpl ticketsService;
 
     private Ticket ticket;
+    private Flight flight;
+    private Aircraft aircraft;
+    private Seats seats;
 
     @BeforeEach
     void setUp() {
@@ -34,6 +46,17 @@ public class TicketServiceTest {
         ticket.setUserId(1L);
         ticket.setIataFlight("IATA");
         ticket.setSeat("1A");
+
+        seats = new Seats();
+        seats.setMaxRows(1);
+        seats.setMaxCols(3);
+        seats.setOccuped("");
+
+        aircraft = new Aircraft();
+        aircraft.setSeats(seats);
+
+        flight = new Flight();
+        flight.setAircraft(aircraft);
     }
 
     @Test
@@ -58,15 +81,16 @@ public class TicketServiceTest {
 
         List<Ticket> allTickets = ticketsService.getALLTickets();
 
-        assertThat(allTickets.size()).isEqualTo(2);
+        assertThat(allTickets).hasSize(2);
     }
 
     @Test
     @DisplayName("Test save ticket")
     void testSaveTicket() {
+        when(flightsService.getFlightInfo("IATA")).thenReturn(flight);
         when(ticketsRepository.save(any(Ticket.class))).thenReturn(ticket);
 
-        Ticket savedTicket = ticketsService.createTicket(1L, "IATA", "1A");
+        Ticket savedTicket = ticketsService.createTicket(1L, "IATA");
 
         assertThat(savedTicket).isNotNull();
 
@@ -87,7 +111,7 @@ public class TicketServiceTest {
 
         List<Ticket> foundTickets = ticketsService.getTickets(1L);
 
-        assertThat(foundTickets.size()).isEqualTo(2);
+        assertThat(foundTickets).hasSize(2);
     }
 
     @Test
@@ -118,6 +142,28 @@ public class TicketServiceTest {
         ticketsService.deleteAllTickets();
 
         verify(ticketsRepository, VerificationModeFactory.times(1)).deleteAll();
+    }
+
+    @Test
+    @DisplayName("Test save ticket with occupied seat")
+    void testSaveTicketWithOccupiedSeat() {
+        seats.setOccuped("1A,1B,1C"); // Assuming these seats are already occupied
+        when(flightsService.getFlightInfo("IATA")).thenReturn(flight);
+        lenient().when(ticketsRepository.save(any(Ticket.class))).thenReturn(ticket);
+
+        Ticket savedTicket = ticketsService.createTicket(1L, "IATA");
+
+        assertThat(savedTicket).isNull(); // The ticket should not be saved because all the seats are occupied
+    }
+
+    @Test
+    @DisplayName("Test get non-existing ticket")
+    void testGetNonExistingTicket() {
+        when(ticketsRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Ticket found = ticketsService.getTicket(999L);
+
+        assertThat(found).isNull();
     }
 
 }

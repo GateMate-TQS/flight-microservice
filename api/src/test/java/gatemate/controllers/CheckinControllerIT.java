@@ -10,24 +10,34 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.mockito.Mockito.when;
 
 import gatemate.entities.Ticket;
+import gatemate.entities.Aircraft;
+import gatemate.entities.Flight;
+import gatemate.entities.Seats;
 import gatemate.services.TicketsService;
+import gatemate.services.FlightService;
 
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest
-public class CheckinControllerIT {
+class CheckinControllerIT {
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private TicketsService ticketsService;
+
+    @MockBean
+    private FlightService flightsService;
 
     private Ticket ticket;
 
@@ -35,15 +45,27 @@ public class CheckinControllerIT {
     void setUp() {
         RestAssuredMockMvc.mockMvc(mockMvc);
 
-        ticket = new Ticket();
-        ticket.setId(1L);
-        ticket.setUserId(1L);
-        ticket.setIataFlight("iataFlight");
-        ticket.setSeat("seat");
+        // Mocking Flight and Seats
+        Flight flight = new Flight();
+        Seats seats = new Seats();
+        Aircraft aircraft = new Aircraft();
+        seats.setMaxRows(1);
+        seats.setMaxCols(4);
+        seats.setOccuped("1A,1B"); // Initially no seats are occupied
+        aircraft.setSeats(seats);
+        flight.setAircraft(aircraft);
+
+        when(flightsService.getFlightInfo("iataFlight")).thenReturn(flight);
+
+        // Clear database before each test
+        ticketsService.deleteAllTickets();
+
+        // Create a ticket for testing
+        ticket = ticketsService.createTicket(1L, "iataFlight");
     }
 
     @AfterEach
-    void clearDatabase() {
+    void tearDown() {
         ticketsService.deleteAllTickets();
     }
 
@@ -54,7 +76,6 @@ public class CheckinControllerIT {
                 .contentType(ContentType.JSON)
                 .param("userId", 1L)
                 .param("iataFlight", "iataFlight")
-                .param("seat", "seat")
                 .when()
                 .post("/checkin/create")
                 .then()
@@ -62,69 +83,47 @@ public class CheckinControllerIT {
     }
 
     @Test
-    @DisplayName("GET /checkin/Alltickets should return all tickets")
-    void getAllTicketsShouldReturnAllTickets() {
+    @DisplayName("POST /checkin/create with invalid data should return 400 Bad Request")
+    void checkinWithInvalidDataShouldReturnBadRequest() {
         RestAssuredMockMvc.given()
+                .contentType(ContentType.JSON)
+                .param("userId", 1L)
+                .param("iataFlight", "iataFlight")
                 .when()
-                .get("/checkin/Alltickets")
+                .post("/checkin/create")
                 .then()
-                .statusCode(200)
-                .body("", hasSize(0));
-
-        ticketsService.createTicket(1L, "iataFlight", "seat");
+                .statusCode(200);
 
         RestAssuredMockMvc.given()
+                .contentType(ContentType.JSON)
+                .param("userId", 1L)
+                .param("iataFlight", "iataFlight")
                 .when()
-                .get("/checkin/Alltickets")
+                .post("/checkin/create")
                 .then()
-                .statusCode(200)
-                .body("", hasSize(1));
+                .statusCode(400)
+                .body(is("Unable to check in. Seats may be unavailable."));
     }
 
     @Test
     @DisplayName("GET /checkin/{ticketId} with valid id should return ticket")
     void getTicketWithValidIdShouldReturnTicket() {
-        ticketsService.createTicket(1L, "iataFlight", "seat");
-
         RestAssuredMockMvc.given()
                 .when()
-                .get("/checkin/1")
+                .get("/checkin/tickets/" + ticket.getId())
                 .then()
                 .statusCode(200)
                 .body("userId", is(1))
                 .body("iataFlight", is("iataFlight"))
-                .body("seat", is("seat"));
+                .body("seat", isA(String.class));
     }
 
     @Test
     @DisplayName("GET /checkin/{ticketId} with invalid id should return 404 Not Found")
-    void getTicketWithInvalidIdShouldreturnNotFound() {
+    void getTicketWithInvalidIdShouldReturnNotFound() {
         RestAssuredMockMvc.given()
                 .when()
-                .get("/checkin/1")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    @DisplayName("GET /checkin/user/{userId} with valid id should return tickets")
-    void getTicketsWithValidIdShouldReturnTickets() {
-        ticketsService.createTicket(1L, "iataFlight", "seat");
-
-        RestAssuredMockMvc.given()
-                .when()
-                .get("/checkin/user/1")
-                .then()
-                .statusCode(200)
-                .body("", hasSize(1));
-    }
-
-    @Test
-    @DisplayName("GET /checkin/user/{userId} with invalid id should return 404 Not Found")
-    void getTicketsWithInvalidIdShouldReturnNotFound() {
-        RestAssuredMockMvc.given()
-                .when()
-                .get("/checkin/user/1")
+                .get("/checkin/tickets/9999")
                 .then()
                 .statusCode(404);
     }
